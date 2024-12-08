@@ -10,7 +10,7 @@ const HomePage = () => {
                 <SideMenu/>
                 <div className='container mx-auto p-5'>
                     <h1>Welcome to FitHub</h1>
-                    <p className='text-3xl'>PRIVATE FEED</p>
+                    <p className='text-3xl'>PRIVATE FEED hello</p>
                 </div>
             </div>
         </div>
