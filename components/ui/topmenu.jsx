@@ -9,12 +9,13 @@ const TopMenu = () => {
             sx={{
                 backgroundColor: "#020617", 
                 zIndex: 1201, 
-                borderBottom: "2px solid #51626D" 
+                borderBottom: "2px solid #51626D" ,
+                height: "64px"
             }}
         >
             <Toolbar>
-                <Typography variant="h5" sx={{ flexGrow: 1, color: "#F3F4F6" }}>
-                    Fithub
+                <Typography variant="h5" sx={{ flexGrow: 1, color: "#ED6262" }}>
+                    FitHub
                 </Typography>
                 <div>
                     <a href="#" className="text-white pr-10">
