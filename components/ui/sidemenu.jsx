@@ -1,44 +1,47 @@
 "use client";
-import { useState } from "react";
-import { Menu } from "antd";
+import React from "react";
+import { List, ListItem, ListItemIcon, ListItemText, Drawer } from "@mui/material";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import SettingsIcon from "@mui/icons-material/Settings";
+import PersonIcon from "@mui/icons-material/Person";
+import HelpIcon from "@mui/icons-material/Help";
 
-const SideMenu = ({ menuItems }) => {
-    const [openKeys, setOpenKeys] = useState([]);
-
-    const onOpenChange = (keys) => {
-        setOpenKeys(keys);
-    };
-
-    const generateMenuItems = (items) => {
-        return Array.isArray(items)
-            ? items.map((item) => {
-                  if (item.subMenu) {
-                      return {
-                          key: item.key,
-                          icon: item.icon,
-                          label: item.title,
-                          children: generateMenuItems(item.subMenu),
-                      };
-                  }
-                  return {
-                      key: item.key,
-                      icon: item.icon,
-                      label: item.title,
-                  };
-              })
-            : [];
-    };
+const SideMenu = () => {
+    const menuItems = [
+        { key: "dashboard", label: "Dashboard", icon: <DashboardIcon /> },
+        { key: "settings", label: "Settings", icon: <SettingsIcon /> },
+        { key: "profile", label: "Profile", icon: <PersonIcon /> },
+        { key: "help", label: "Help & Support", icon: <HelpIcon /> },
+    ];
 
     return (
-        <div className="bg-slate-700 text-white overflow-auto h-screen w-64 "
+        <Drawer
+            variant="permanent"
+            sx={{
+                width: 240,
+                height: "100vh",
+                flexShrink: 0,
+                 
+                "& .MuiDrawer-paper": {
+                    paddingTop: "74px",
+                    width: 240,
+                    height: "100vh",
+                    boxSizing: "border-box",
+                    backgroundColor: "#020617", // Dark theme
+                    color: "#FFFFFF",
+                    borderRight: "2px solid #51626D",
+                },
+            }}
         >
-            <Menu
-                mode="inline"
-                openKeys={openKeys}
-                onOpenChange={onOpenChange}
-                items={generateMenuItems(menuItems)}
-            />
-        </div>
+            <List>
+                {menuItems.map((item) => (
+                    <ListItem button key={item.key}>
+                        <ListItemIcon sx={{ color: "#FFFFFF" }}>{item.icon}</ListItemIcon>
+                        <ListItemText primary={item.label} />
+                    </ListItem>
+                ))}
+            </List>
+        </Drawer>
     );
 };
 

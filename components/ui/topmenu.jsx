@@ -1,20 +1,28 @@
-import React from 'react';
+"use client";
+import React from "react";
+import { AppBar, Toolbar, Typography } from "@mui/material";
 
 const TopMenu = () => {
     return (
-        <nav className="bg-slate-900 p-4">
-            <ul className="flex justify-between items-center min-h-7">
-
-                <li><a href="#" className="text-red-400 text-3xl font-bold">Fithub</a></li>
-
-                <div className="flex space-x-4">
-                    <li><a href="#" className="text-white">About</a></li>
-                    <li><a href="#" className="text-white">Services</a></li>
-                    <li><a href="#" className="text-white">Contact</a></li>
+        <AppBar 
+            position="sticky" 
+            sx={{
+                backgroundColor: "#020617", 
+                zIndex: 1201, 
+                borderBottom: "2px solid #51626D" 
+            }}
+        >
+            <Toolbar>
+                <Typography variant="h5" sx={{ flexGrow: 1, color: "#F3F4F6" }}>
+                    Fithub
+                </Typography>
+                <div>
+                    <a href="#" className="text-white pr-10">
+                        Profile
+                    </a>
                 </div>
-               
-            </ul>
-        </nav>
+            </Toolbar>
+        </AppBar>
     );
 };
 
