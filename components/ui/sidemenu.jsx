@@ -13,7 +13,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import ChatIcon from "@mui/icons-material/Chat";
 import PersonIcon from "@mui/icons-material/Person";
 
-const SideMenu = () => {
+const SideMenu = ({ pathname }) => { // Correctly destructuring `pathname` from props
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
 
@@ -31,7 +31,7 @@ const SideMenu = () => {
     { key: "privatefeed", label: "Private Feed", icon: <ChatIcon />, path: "/private_feed" },
     { key: "profile", label: "Profile", icon: <PersonIcon />, path: "/profile" },
   ];
-
+  console.log(pathname, "pathname in side");
   return (
     <Drawer
       variant="permanent"
@@ -53,22 +53,34 @@ const SideMenu = () => {
       <List>
         {menuItems.map((item) => (
           <ListItemButton
-            key={item.key}
-            selected={router.pathname === item.path} // Highlight selected item
-            onClick={() => router.push(item.path)} // Navigate on click
-            sx={{
-              backgroundColor: router.pathname === item.path ? "#ED6262" : "#020617", //background for selected
-              color: router.pathname === item.path ? "#ED6262" : "#FFFFFF", // Text color changes for selected item
+          key={item.key}
+          selected={pathname === item.path}
+          onClick={() => router.push(item.path)}
+          sx={{
+            "&.Mui-selected": {
+              backgroundColor: "#FD6262", // Custom background for selected
+              color: "#FFFFFF", // Custom text color for selected
               "&:hover": {
-                backgroundColor: "#ED6262", // Light hover effect
+                backgroundColor: "#ED6262", // Custom hover effect for selected
               },
+            },
+            "&:hover": {
+              backgroundColor: "#ED6262", // Custom hover effect for non-selected
+            },
+            backgroundColor: pathname === item.path ? "#FD6262" : "#020617", // Default background
+            color: pathname === item.path ? "#FFFFFF" : "#FFFFFF", // Default text color
+          }}
+        >
+          <ListItemIcon
+            sx={{
+              color: pathname === item.path ? "#FFFFFF" : "#FFFFFF", // Icon color
             }}
           >
-            <ListItemIcon sx={{ color: router.pathname === item.path ? "#ED6262" : "#FFFFFF" }}>
-              {item.icon}
-            </ListItemIcon>
-            <ListItemText primary={item.label} />
-          </ListItemButton>
+            {item.icon}
+          </ListItemIcon>
+          <ListItemText primary={item.label} />
+        </ListItemButton>
+        
         ))}
       </List>
     </Drawer>
