@@ -1,21 +1,23 @@
+"use client";
 import React from 'react';
-import TopMenu from '@/components/ui/topmenu';
-import SideMenu from '@/components/ui/sidemenu';
-import Post from '@/components/ui/posts';
+import Layout from '@/components/ui/layout';  // Import the Layout component
+import { useRouter } from 'next/navigation';
+
+import Post from '@/components/ui/posts'; 
+
+
 
 const HomePage = () => {
+
+    const router = useRouter();
     return (
-        <div className='bg-slate-950 min-h-screen'>
-            <TopMenu/>
-            <div className='flex'>
-                <SideMenu/>
-                <div className='container mx-auto p-5'>
-                    <h1>Welcome to FitHub</h1>
-                    <p>Your one-stop solution for fitness tracking and management.</p>
-                    <Post/>
-                </div>
-            </div>
-        </div>
+        <Layout
+        pathname={"/home"}>  {/* Wrap the homepage content inside the Layout */}
+            
+            <h1>Welcome to FitHub</h1>
+            <p>Your one-stop solution for fitness tracking and management.</p>
+            <Post />  {/* The Post component will be rendered inside the layout */}
+        </Layout>
     );
 };
 
