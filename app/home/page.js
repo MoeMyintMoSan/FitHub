@@ -3,9 +3,9 @@ import React from 'react';
 import Layout from '@/components/ui/layout';  // Import the Layout component
 import { useRouter } from 'next/navigation';
 
-import Post from '@/components/ui/posts'; 
-
-
+import PostTrainer from '@/components/ui/post_trainer'; 
+import PostNutrition from '@/components/ui/post_nutrition';
+import CreateTrainerPost from '@/components/ui/create_post_trainer';  // Import the Post component
 
 const HomePage = () => {
 
@@ -16,7 +16,12 @@ const HomePage = () => {
             
             <h1>Welcome to FitHub</h1>
             <p>Your one-stop solution for fitness tracking and management.</p>
-            <Post />  {/* The Post component will be rendered inside the layout */}
+            <PostTrainer />  {/* The Post component will be rendered inside the layout */}
+            <br />
+            <PostNutrition />
+            <div style={{ position: 'fixed', bottom: '20px', right: '20px' }}>
+                <CreateTrainerPost />  {/* The Post component will be rendered inside the layout */}
+            </div>
         </Layout>
     );
 };
