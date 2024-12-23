@@ -56,7 +56,7 @@ export default function RecipeReviewCard() {
         <CardHeader
           avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-              R
+              K
             </Avatar>
           }
           action={
@@ -64,9 +64,10 @@ export default function RecipeReviewCard() {
               <MoreVertIcon />
             </IconButton>
           }
-          title="Shrimp and Chorizo Paella"
+          title="KyawGyi_Fitness"
           subheader="September 14, 2016"
           sx={{ color: blueGrey[50] }}
+          subheaderTypographyProps={{ sx: { color: blueGrey[200] } }}
         />
         <Grid container>
           <Grid item xs={6} sx={{ml: 2}}>
@@ -74,7 +75,7 @@ export default function RecipeReviewCard() {
               component="img"
               image="https://images.everydayhealth.com/images/healthy-living/fitness/everything-you-need-know-about-fitness-1440x810.jpg"
               alt="Paella dish"
-              sx={{ height: "100%", width: "100%", borderRadius: 4 }}
+              sx={{ height: "250px", width: "550px", borderRadius: 4 }}
             />
           </Grid>
           <Grid item xs={5}  sx ={{ml:2}}>
