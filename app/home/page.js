@@ -3,9 +3,6 @@ import React, { useEffect } from "react";
 import Layout from "@/components/ui/layout"; // Import the Layout component
 import { useSession, signIn } from "next-auth/react"; // Import session and signIn
 import { useRouter } from "next/navigation";
-import React from "react";
-import Layout from "@/components/ui/layout"; // Import the Layout component
-import { useRouter } from "next/navigation";
 
 import Post from "@/components/ui/post";
 import CreatePost from "@/components/ui/create_post"; // Import the Post component
