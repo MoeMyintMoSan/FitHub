@@ -51,7 +51,7 @@ export default function RecipeReviewCard() {
   };
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center">
+    <Box display="flex" justifyContent="center" alignItems="center" sx={{ mr:20 , mt: 2}}>
       <Card sx={{ maxWidth: 900, borderRadius: 2, bgcolor: '#2B2231' }}>
         <CardHeader
           avatar={
