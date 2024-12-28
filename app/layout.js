@@ -1,4 +1,5 @@
 import localFont from "next/font/local";
+import SessionProviderWrapper from "@/components/ui/SessionProviderWrapper"; // Import the wrapper
 import "./globals.css";
 
 const geistSans = localFont({
@@ -23,7 +24,8 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        {/* Wrap children with SessionProviderWrapper */}
+        <SessionProviderWrapper>{children}</SessionProviderWrapper>
       </body>
     </html>
   );
