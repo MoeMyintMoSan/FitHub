@@ -7,14 +7,14 @@ const TopMenu = () => {
         <AppBar 
             position="sticky" 
             sx={{
-                backgroundColor: "#020617", 
+                backgroundColor: "#0E1113", //020617
                 zIndex: 1201, 
                 borderBottom: "2px solid #51626D" ,
                 height: "64px"
             }}
         >
             <Toolbar>
-                <Typography variant="h5" sx={{ flexGrow: 1, color: "#ED6262" }}>
+                <Typography variant="h4" sx={{ flexGrow:1, color: "#ED6262" }}>
                     FitHub
                 </Typography>
                 <div>

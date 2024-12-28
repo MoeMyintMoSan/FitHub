@@ -7,7 +7,7 @@ const Layout = ({ children, pathname }) => {
   return (
     <div
       className="min-h-screen"
-      style={{ backgroundColor: "#020617" }} // Set the background color for the layout
+      style={{ backgroundColor: "#0E1113" }} // #020617 Set the background color for the layout
     >
       <TopMenu /> {/* This will display the top menu on all pages */}
       <div className="flex">
