@@ -2,11 +2,12 @@
 import React from "react";
 import Layout from "@/components/ui/layout"; // Import the Layout component
 
+import ProfileCard from "@/components/ui/profile_card"; // Import the Post component
+
 const ProfilePage = () => {
   return (
     <Layout pathname={"/profile"}> {/* Pass the correct pathname */}
-      <h1>Welcome to Profile</h1>
-      <p>Your profile wack as heck!</p>
+      <ProfileCard /> {/* The Post component will be rendered inside the layout */}
     </Layout>
   );
 };
