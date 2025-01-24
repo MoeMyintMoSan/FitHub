@@ -2,16 +2,15 @@
 
 import * as React from "react";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
 import Avatar from "@mui/material/Avatar";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { blueGrey } from "@mui/material/colors";
-import { CssBaseline, GlobalStyles } from "@mui/material";
+import { CardContent, CssBaseline, GlobalStyles } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+
+import CustomButton from "./profileButtons";
 
 export default function ProfileCard() {
   // Example fields for profile information
@@ -27,12 +26,12 @@ export default function ProfileCard() {
   ];
   // Example conditions for visibility
   const [showButtonBP, setShowButtonBP] = React.useState(false);
-  const [showButtonD, setShowButtonD] = React.useState(false);
+  const [showButtonD, setShowButtonD] = React.useState(true);
   const [showButtonP, setShowButtonP] = React.useState(false);
-  const [showButtonR, setShowButtonR] = React.useState(true);
-  const [showButtonL, setShowButtonL] = React.useState(true);
+  const [showButtonR, setShowButtonR] = React.useState(false);
+  const [showButtonL, setShowButtonL] = React.useState(false);
   const [showCheckMark, setShowCheckMark] = React.useState(true);
-  const [showDetails, setShowDetails] = React.useState(true);
+  const [showDetails, setShowDetails] = React.useState(false);
 
   const [fields, setFields] = React.useState(initialFields);
   const [hasChanges, setHasChanges] = React.useState(false);
@@ -56,6 +55,12 @@ export default function ProfileCard() {
     setHasChanges(false);
   };
 
+  const toggleDetailsAndPage = () => {
+    setShowDetails((prev) => !prev);
+    setShowButtonD((prev) => !prev);
+    setShowButtonP((prev) => !prev);
+  }
+
   return (
     <React.Fragment>
       <CssBaseline />
@@ -65,8 +70,7 @@ export default function ProfileCard() {
             margin: 0,
             padding: 0,
             width: "100%",
-            height: "100%",
-            overflow: "hidden", // Prevent scrollbars
+            height: "100%"
           },
         }}
       />
@@ -77,7 +81,6 @@ export default function ProfileCard() {
           justifyContent: "center",
           alignItems: "center",
           width: "70%",
-          height: "80vh", // Use viewport height
           marginLeft: "2%",
           marginTop: "2%",
           overflow: "hidden",
@@ -92,6 +95,7 @@ export default function ProfileCard() {
             marginLeft: "20px",
             marginRight: "20px",
             marginTop: "40px",
+            marginBottom: "40px",
             borderRadius: 2,
             bgcolor: "#2B2231",
           }}
@@ -121,90 +125,29 @@ export default function ProfileCard() {
                 }}
               >
                 {showButtonBP && (
-                  <Button
-                    variant="contained"
-                    size="medium"
-                    sx={{
-                      textTransform: "none",
-                      border: "1px solid #ED6262", // Custom border color
-                      bgcolor: "#2A3236", // Custom button color
-                      color: "#ED6262", // Customize text color
-                      "&:hover": {
-                        bgcolor: blueGrey[600], // Button hover color
-                      },
-                    }}
-                  >
+                  <CustomButton type={1} onClick={() => console.log('BECOME PRO clicked')}>
                     BECOME PRO
-                  </Button>
+                  </CustomButton>
                 )}
-
                 {showButtonD && (
-                  <Button
-                    variant="contained"
-                    size="medium"
-                    sx={{
-                      textTransform: "none",
-                      border: "1px solid #ED6262", // Custom border color
-                      bgcolor: "#2A3236", // Custom button color
-                      color: "#ED6262", // Customize text color
-                      "&:hover": {
-                        bgcolor: blueGrey[600], // Button hover color
-                      },
-                    }}
-                  >
+                  <CustomButton type={1} onClick={() => { toggleDetailsAndPage(); console.log('DETAILS clicked'); }}>
                     DETAILS
-                  </Button>
+                  </CustomButton>
                 )}
-
                 {showButtonP && (
-                  <Button
-                    variant="contained"
-                    size="medium"
-                    sx={{
-                      textTransform: "none",
-                      border: "1px solid #ED6262", // Custom border color
-                      bgcolor: "#2A3236", // Custom button color
-                      color: "#ED6262", // Customize text color
-                      "&:hover": {
-                        bgcolor: blueGrey[600], // Button hover color
-                      },
-                    }}
-                  >
+                  <CustomButton type={1} onClick={() => { toggleDetailsAndPage(); console.log('PAGE clicked'); }}>
                     PAGE
-                  </Button>
+                  </CustomButton>
                 )}
-
                 {showButtonR && (
-                  <Button
-                    variant="contained"
-                    size="medium"
-                    sx={{
-                      textTransform: "none",
-                      bgcolor: "#ED6262", // Custom button color
-                      color: "#CFCFD0", // Customize text color
-                      "&:hover": {
-                        bgcolor: blueGrey[600], // Button hover color
-                      },
-                    }}
-                  >
+                  <CustomButton type={2} onClick={() => console.log('REGISTER clicked')}>
                     REGISTER
-                  </Button>
+                  </CustomButton>
                 )}
                 {showButtonL && (
-                  <Button
-                    variant="contained"
-                    size="medium"
-                    sx={{
-                      textTransform: "none",
-                      bgcolor: "#ED6262", // Custom button color
-                      color: "#CFCFD0", // Customize text color
-                      "&:hover": {
-                        bgcolor: blueGrey[600], // Button hover color
-                      },
-                    }}
-                  >
+                  <CustomButton type={2} onClick={() => console.log('LIKE clicked')}>
                     LIKE
-                  </Button>
+                  </CustomButton>
                 )}
               </Box>
             }
@@ -237,7 +180,7 @@ export default function ProfileCard() {
             }}
           />
           {showDetails && (
-            <>
+            <CardContent>
               {/* Content Area */}
               <Box
                 sx={{
@@ -269,24 +212,12 @@ export default function ProfileCard() {
                         variant="outlined"
                         fullWidth
                         sx={{
-                          width: "100%", // Full width, you can change to any specific size like 300px
-                          height: "1rem+10px", // Adjust height of the text field
+                          width: "100%",
                           "& .MuiInputBase-input": {
-                            fontSize: "1rem", // Change font size of the input text
-                            padding: "5px", // Adjust padding inside the text field
+                            fontSize: "1.25rem", // Change font size of the input text
+                            padding: "10px", // Adjust padding inside the text field
                           },
                           backgroundColor: "#2A3236",
-                          "& .MuiOutlinedInput-root": {
-                            "& fieldset": {
-                              borderColor: "transparent", // Make the border transparent by default
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "transparent", // Ensure border remains transparent on hover
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "transparent", // Keep border transparent when focused
-                            }
-                          }
                         }}
                         inputProps={{ style: { color: "#FFFFFF" } }}
                       />
@@ -303,10 +234,7 @@ export default function ProfileCard() {
                   width: "100%",
                 }}>
                   {fields.slice(5).map((field) => (
-                    <Box key={field.id}
-                      sx={{
-                        height: "(100%-30px)/3",
-                      }}>
+                    <Box key={field.id}>
                       <Typography
                         variant="caption"
                         sx={{ fontWeight: "bold", color: "#849298" }}
@@ -319,26 +247,13 @@ export default function ProfileCard() {
                         variant="outlined"
                         fullWidth
                         multiline // Enable multiline
-                        rows={2} // Set initial number of rows
                         sx={{
                           width: "100%", // Full width, you can change to any specific size like 300px
-                          height: "80%", // Adjust height of the text field
                           "& .MuiInputBase-input": {
-                            fontSize: "1rem", // Change font size of the input text
-                            padding: "5px", // Adjust padding inside the text field
+                            fontSize: "1.25rem", // Change font size of the input text
+                            padding: "10px", // Adjust padding inside the text field
                           },
                           backgroundColor: "#2A3236",
-                          "& .MuiOutlinedInput-root": {
-                            "& fieldset": {
-                              borderColor: "transparent", // Make the border transparent by default
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "transparent", // Ensure border remains transparent on hover
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "transparent", // Keep border transparent when focused
-                            }
-                          }
                         }}
                         inputProps={{ style: { color: "#FFFFFF" } }}
                       />
@@ -356,21 +271,26 @@ export default function ProfileCard() {
                     marginTop: 1.5,
                   }}
                 >
-                  <Button
-                    variant="contained"
-                    onClick={() => alert("Changes saved!")}
-                    sx={{
-                      bgcolor: "#ED6262",
-                      color: "#FFFFFF",
-                      textTransform: "none",
-                      "&:hover": { bgcolor: blueGrey[600] },
-                    }}
-                  >
+                  <CustomButton type={2} onClick={() => { saveChanges(); console.log("Changes saved!"); }}>
                     Save Changes
-                  </Button>
+                  </CustomButton>
                 </Box>
               )}
-            </>
+            </CardContent>
+          )}
+          {!showDetails && (
+            <CardContent>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: "#FFFFFF",
+                  fontSize: "1.25rem",
+                  textAlign: "center",
+                }}
+              >
+                Click on DETAILS to view profile information.
+              </Typography>
+            </CardContent>
           )}
         </Card>
       </Box>
