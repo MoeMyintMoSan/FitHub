@@ -9,8 +9,13 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { CardContent, CssBaseline, GlobalStyles } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import Modal from "@mui/material/Modal";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 import CustomButton from "./profileButtons";
+import CusBox from "./cusBox";
+import Post from "./post";
 
 export default function ProfileCard() {
   // Example fields for profile information
@@ -25,7 +30,7 @@ export default function ProfileCard() {
     { id: 8, title: "Goals", value: "Stay Fit\nStay Fit\nStay Fit" },
   ];
   // Example conditions for visibility
-  const [showButtonBP, setShowButtonBP] = React.useState(false);
+  const [showButtonBP, setShowButtonBP] = React.useState(true);
   const [showButtonD, setShowButtonD] = React.useState(true);
   const [showButtonP, setShowButtonP] = React.useState(false);
   const [showButtonR, setShowButtonR] = React.useState(false);
@@ -35,6 +40,7 @@ export default function ProfileCard() {
 
   const [fields, setFields] = React.useState(initialFields);
   const [hasChanges, setHasChanges] = React.useState(false);
+  const [openModal, setOpenModal] = React.useState(false);
 
   const handleInputChange = (id, newValue) => {
     const updatedFields = fields.map((field) =>
@@ -61,6 +67,9 @@ export default function ProfileCard() {
     setShowButtonP((prev) => !prev);
   }
 
+  const handleOpenModal = () => setOpenModal(true);
+  const handleCloseModal = () => setOpenModal(false);
+
   return (
     <React.Fragment>
       <CssBaseline />
@@ -74,33 +83,21 @@ export default function ProfileCard() {
           },
         }}
       />
-
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          width: "70%",
-          marginLeft: "2%",
-          marginTop: "2%",
-          overflow: "hidden",
-          backgroundColor: "#2B2231",
-          borderRadius: 3,
-        }}
-      >
+      <Box display="flex" justifyContent="center" alignItems="center">
         <Card
           sx={{
-            width: "100%",
-            height: "100%",
-            marginLeft: "20px",
-            marginRight: "20px",
-            marginTop: "40px",
-            marginBottom: "40px",
+            width: 900,
+            padding: 5,
             borderRadius: 2,
             bgcolor: "#2B2231",
           }}
         >
           <CardHeader
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+            }}
             avatar={
               <Avatar
                 sx={{
@@ -120,12 +117,12 @@ export default function ProfileCard() {
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
-                  height: "110px",
+                  marginTop: 2,
                   gap: 1,
                 }}
               >
                 {showButtonBP && (
-                  <CustomButton type={1} onClick={() => console.log('BECOME PRO clicked')}>
+                  <CustomButton type={1} onClick={() => { handleOpenModal(); console.log('BECOME PRO clicked'); }}>
                     BECOME PRO
                   </CustomButton>
                 )}
@@ -152,7 +149,7 @@ export default function ProfileCard() {
               </Box>
             }
             title={
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Box sx={{ marginTop: 2 }} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 KyawGyi_Fitness
                 {showCheckMark && (
                   <CheckCircleIcon
@@ -162,7 +159,7 @@ export default function ProfileCard() {
                     }}
                   />
                 )}
-              </div>
+              </Box>
             }
             titleTypographyProps={{
               sx: {
@@ -171,13 +168,39 @@ export default function ProfileCard() {
                 color: "#FFFFFF",
               },
             }}
-            subheader="kyawgyi.fitness@gmail.com"
-            subheaderTypographyProps={{
-              sx: {
-                fontSize: "1rem", // Increase subheader font size
-                color: "#FFFFFF",
-              },
-            }}
+            subheader={
+              <Box>
+                <Typography
+                  sx={{
+                    fontSize: "1rem", // Increase subheader font size
+                    color: "#FFFFFF",
+                  }}
+                >
+                  kyawgyi.fitness@gmail.com
+                </Typography>
+                {!showDetails && (
+                  <div>
+                    <Typography
+                      sx={{
+                        fontSize: "1.25rem", // Increase subheader font size
+                        color: "#FF9999",
+                      }}
+                    >
+                      Trainer
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: "1rem", // Increase subheader font size
+                        color: "#FFFFFF",
+                        whiteSpace: "pre-line"
+                      }}
+                    >
+                      Just started my trainer journey. Let's get fit together!
+                    </Typography>
+                  </div>
+                )}
+              </Box>
+            }
           />
           {showDetails && (
             <CardContent>
@@ -279,21 +302,125 @@ export default function ProfileCard() {
             </CardContent>
           )}
           {!showDetails && (
-            <CardContent>
-              <Typography
-                variant="body1"
+            <CardContent
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Box
                 sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-start",
+                  alignItems: "flex-start",
+                  width: 700,
+                  gap: 2,
                   color: "#FFFFFF",
-                  fontSize: "1.25rem",
-                  textAlign: "center",
                 }}
               >
-                Click on DETAILS to view profile information.
-              </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-evenly",
+                    alignItems: "center",
+                    width: "100%",
+                    borderRadius: 2,
+                    padding: 2,
+                    backgroundColor: "#2C3134",
+                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.25)" // Add shadow effect
+                  }}
+                >
+                  <CusBox test1={"Posts"} test2={"2"} type={1}></CusBox>
+                  <CusBox test1={"Registered"} test2={"1/10"} type={1}></CusBox>
+                  <CusBox test1={"Likes"} test2={"1"} type={1}></CusBox>
+                </Box>
+                <Typography>
+                  Posts
+                </Typography>
+                <CusBox type={2} obj={<Post
+                  type="trainer"
+                  avatarLabel="K"
+                  title="KyawGyi_Fitness"
+                  subheader="December 28, 2024"
+                  image="https://images.everydayhealth.com/images/healthy-living/fitness/everything-you-need-know-about-fitness-1440x810.jpg"
+                  imageAlt="Fitness"
+                  mainContent="Beginner guide to weight loss and fitness"
+                  listItems={["Sit Ups", "Push Ups", "Lunges"]}
+                  secondaryListItems={["60", "30", "30"]}
+                  tertiaryListItems={["2", "3", "3"]}
+                  expandedDescriptions={[
+                    "DO NOT forget to rest between each set and stay hydrated.",
+                    "These exercises are beginner-friendly and can be done at home. Stay healthy and fit!",
+                  ]}
+                />}>
+                </CusBox>
+              </Box>
             </CardContent>
           )}
         </Card>
       </Box>
-    </React.Fragment>
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="become-pro-modal-title"
+        aria-describedby="become-pro-modal-description"
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 900,
+            height: "70%",
+            backgroundColor: "#5C646A",
+            borderRadius: 2,
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.25)",
+            p: 5,
+          }}
+        >
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseModal}
+            sx={{
+              position: 'absolute',
+              right: 10,
+              top: 10,
+              color: "#FFFFFF",
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+              color: "#FFFFFF",
+              gap: 5
+            }}
+          >
+            <Typography variant="h4">
+              CHOOSE YOUR SPECIALITY
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-evenly", 
+                width: "100%"
+              }}
+            >
+              <CusBox test1={"/img/image_5.png"} test2={"TRAINER"} type={3} obj={handleCloseModal}></CusBox>
+              <CusBox test1={"/img/image_6.png"} test2={"NUTRITIONIST"} type={3} obj={handleCloseModal}></CusBox>
+            </Box>
+          </Box>
+        </Box>
+      </Modal>
+    </React.Fragment >
   );
 }
