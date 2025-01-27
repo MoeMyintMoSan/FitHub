@@ -26,10 +26,7 @@ const HomePage = () => {
   }
   return (
     <Layout pathname={"/home"}>
-      {" "}
       {/* Wrap the homepage content inside the Layout */}
-      <h1>Welcome to FitHub</h1>
-      <p>Your one-stop solution for fitness tracking and management.</p>
       <Post
         type="trainer"
         avatarLabel="K"
@@ -64,7 +61,7 @@ const HomePage = () => {
         ]}
       />
       <div style={{ position: "fixed", bottom: "20px", right: "20px" }}>
-        <CreatePost type="trainer" />{" "}
+        <CreatePost type="trainer" />
         {/* The Post component will be rendered inside the layout */}
       </div>
     </Layout>
