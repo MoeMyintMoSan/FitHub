@@ -1,42 +1,48 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export default function SignIn() {
+export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [dob, setDob] = useState(""); // State for Date of Birth
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
     setError(null);
 
-    const result = await signIn("credentials", {
-      redirect: false, // Prevent automatic redirect
-      email,
-      password,
-    });
-
-    if (result?.error) {
-      setError("Invalid email or password");
-    } else {
-      // Ensure this runs only on the client side
-      if (typeof window !== "undefined") {
-        window.location.href = "/home"; // Redirect manually on success
-      }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      setLoading(false);
+      return;
     }
 
-    setLoading(false);
+    if (!dob) {
+      setError("Please enter your date of birth");
+      setLoading(false);
+      return;
+    }
+
+    // Simulate a signup request
+    setTimeout(() => {
+      setLoading(false);
+      if (typeof window !== "undefined") {
+        window.location.href = "/home"; // Redirect manually to /home after successful signup
+      }
+    }, 1500);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0E1113]">
       <div className="w-full max-w-md p-8 bg-[#1A1D21] shadow-lg rounded-md">
         <h1 className="text-2xl font-bold text-center mb-6 text-white">
-          Sign In
+          Sign Up
         </h1>
         {error && (
           <div className="mb-4 text-red-500 bg-red-100 p-3 rounded">
@@ -80,6 +86,41 @@ export default function SignIn() {
               className="mt-1 block w-full p-2 border border-gray-600 rounded-md bg-[#0E1113] text-white placeholder-gray-400 shadow-sm focus:outline-none focus:ring-[#FD6262] focus:border-[#FD6262]"
             />
           </div>
+          <div>
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-white"
+            >
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              placeholder="Confirm your password"
+              className="mt-1 block w-full p-2 border border-gray-600 rounded-md bg-[#0E1113] text-white placeholder-gray-400 shadow-sm focus:outline-none focus:ring-[#FD6262] focus:border-[#FD6262]"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="dob"
+              className="block text-sm font-medium text-white"
+            >
+              Date of Birth
+            </label>
+            <input
+              type="date"
+              id="dob"
+              name="dob"
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
+              required
+              className="mt-1 block w-full p-2 border border-gray-600 rounded-md bg-[#0E1113] text-white placeholder-gray-400 shadow-sm focus:outline-none focus:ring-[#FD6262] focus:border-[#FD6262]"
+            />
+          </div>
           <button
             type="submit"
             disabled={loading}
@@ -87,13 +128,13 @@ export default function SignIn() {
               loading ? "cursor-not-allowed opacity-50" : ""
             }`}
           >
-            {loading ? "Signing In..." : "Sign In"}
+            {loading ? "Signing Up..." : "Sign Up"}
           </button>
         </form>
         <p className="mt-4 text-sm text-gray-400 text-center">
-          Don't have an account?{" "}
-          <a href="/signup" className="text-[#FD6262] hover:underline">
-            Sign Up
+          Already have an account?{" "}
+          <a href="/" className="text-[#FD6262] hover:underline">
+            Sign In
           </a>
         </p>
       </div>

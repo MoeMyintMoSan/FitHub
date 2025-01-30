@@ -12,7 +12,7 @@ const PrivatePage = () => {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/page"); // Redirect to sign-in if not authenticated
+      router.push("/"); // Redirect to sign-in if not authenticated
     }
   }, [status, router]);
 
