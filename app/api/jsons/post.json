@@ -1,0 +1,53 @@
+[
+    {
+      "post_id": 1,
+      "post_type": "public",
+      "like_count": 120,
+      "content_type": "trainer",
+      "image": "https://example.com/images/trainer_post1.jpg",
+      "content": "10 tips for building strength and improving your deadlift technique.",
+      "title": "Master Your Deadlift",
+      "created_date": "2025-01-20"
+    },
+    {
+      "post_id": 2,
+      "post_type": "private",
+      "like_count": 45,
+      "content_type": "nutritionist",
+      "image": "https://example.com/images/nutritionist_post1.jpg",
+      "content": "Discover the benefits of including more fiber in your diet.",
+      "title": "High-Fiber Diet Benefits",
+      "created_date": "2025-01-18"
+    },
+    {
+      "post_id": 3,
+      "post_type": "public",
+      "like_count": 300,
+      "content_type": "trainer",
+      "image": "https://example.com/images/trainer_post2.jpg",
+      "content": "5 bodyweight exercises to build muscle at home.",
+      "title": "No-Equipment Workouts",
+      "created_date": "2025-01-15"
+    },
+    {
+      "post_id": 4,
+      "post_type": "private",
+      "like_count": 78,
+      "content_type": "nutritionist",
+      "image": "https://example.com/images/nutritionist_post2.jpg",
+      "content": "A step-by-step guide to meal prepping for the week ahead.",
+      "title": "Meal Prep 101",
+      "created_date": "2025-01-22"
+    },
+    {
+      "post_id": 5,
+      "post_type": "public",
+      "like_count": 500,
+      "content_type": "trainer",
+      "image": "https://example.com/images/trainer_post3.jpg",
+      "content": "The ultimate guide to improving your cardiovascular endurance.",
+      "title": "Cardio Endurance Guide",
+      "created_date": "2025-01-24"
+    }
+  ]
+  
