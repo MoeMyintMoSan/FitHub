@@ -17,6 +17,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { Box, Grid } from "@mui/material";
+import dynamic from "next/dynamic";
+const Comment = dynamic(() => import("./comment"), { ssr: false });
 
 // ExpandMore IconButton Styling
 const ExpandMore = styled((props) => {
@@ -29,6 +31,7 @@ const ExpandMore = styled((props) => {
   }),
   transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
 }));
+
 
 export default function Post({
   type,
@@ -44,9 +47,12 @@ export default function Post({
   expandedDescriptions = [],
 }) {
   const [expanded, setExpanded] = React.useState(false);
-
+  const [showComment, setShowComment] = React.useState(false);
   const handleExpandClick = () => {
     setExpanded(!expanded);
+  };
+  const toggleComment = () => {
+    setShowComment((prev) => !prev);
   };
 
   return (
@@ -191,7 +197,7 @@ export default function Post({
           <IconButton aria-label="add to favorites" sx={{ color: "white" }}>
             <FavoriteIcon />
           </IconButton>
-          <IconButton aria-label="comment" sx={{ color: "white" }}>
+          <IconButton onClick={toggleComment} aria-label="comment" sx={{ color: "white" }}>
             <ModeCommentIcon />
           </IconButton>
           <ExpandMore
@@ -222,6 +228,8 @@ export default function Post({
           </CardContent>
         </Collapse>
       </Card>
+        {/* Comment Section */}
+        {showComment && <Comment onClose={toggleComment} />}
     </Box>
   );
 }
