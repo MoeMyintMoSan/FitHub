@@ -4,6 +4,8 @@ import Layout from "@/components/ui/layout"; // Import the Layout component
 import { useSession, signIn } from "next-auth/react"; // Import session and signIn
 import { useRouter } from "next/navigation";
 
+import PrivateFeed from "@/components/ui/privateFeed";
+
 const PrivatePage = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -24,7 +26,7 @@ const PrivatePage = () => {
 
   return (
     <Layout pathname={"/private_feed"}>
-      
+      <PrivateFeed />
     </Layout>
   );
 };

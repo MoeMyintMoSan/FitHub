@@ -4,7 +4,7 @@ import Layout from "@/components/ui/layout"; // Import the Layout component
 import { useSession, signIn } from "next-auth/react"; // Import session and signIn
 import { useRouter } from "next/navigation";
 
-import ProfileCard from "@/components/ui/profile_card"; // Import the Post component
+import ProfileCard from "@/components/ui/profileCard"; // Import the Post component
 
 const ProfilePage = () => {
   const { data: session, status } = useSession();
