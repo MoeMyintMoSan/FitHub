@@ -108,7 +108,7 @@ const SearchPage = () => {
             )
           ) : (
             filteredPosts.length > 0 ? (
-              <Grid container spacing={2}>
+              <Grid container spacing={3}>
                 {filteredPosts.map((post) => (
                   <Grid item xs={12} key={post.post_id}>
                     <Post
