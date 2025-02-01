@@ -41,6 +41,7 @@ export default function SignUp() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0E1113]">
       <div className="w-full max-w-md p-8 bg-[#1A1D21] shadow-lg rounded-md">
+        <img src="/img/image_1.png" alt="Sign In Image" className="mx-auto mb-6" />
         <h1 className="text-2xl font-bold text-center mb-6 text-white">
           Sign Up
         </h1>

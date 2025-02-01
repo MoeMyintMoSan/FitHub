@@ -35,9 +35,12 @@ export default function SignIn() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0E1113]">
       <div className="w-full max-w-md p-8 bg-[#1A1D21] shadow-lg rounded-md">
+        <img src="/img/image_1.png" alt="Sign In Image" className="mx-auto mb-6" />
         <h1 className="text-2xl font-bold text-center mb-6 text-white">
           Sign In
+          
         </h1>
+        
         {error && (
           <div className="mb-4 text-red-500 bg-red-100 p-3 rounded">
             {error}

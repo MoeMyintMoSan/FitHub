@@ -21,13 +21,13 @@ export default function ProfileCard() {
   // Example fields for profile information
   const initialFields = [
     { id: 1, title: "Name", value: "AA" },
-    { id: 2, title: "Email", value: "example@gmail.com" },
-    { id: 3, title: "Phone", value: "+123456789" },
-    { id: 4, title: "Location", value: "City" },
-    { id: 5, title: "Age", value: "25" },
-    { id: 6, title: "Height", value: "5'10\"" },
-    { id: 7, title: "Weight", value: "150 lbs\n150 lbs" },
-    { id: 8, title: "Goals", value: "Stay Fit\nStay Fit\nStay Fit" },
+    { id: 2, title: "Weight", value: "69 KG" },
+    { id: 3, title: "Height", value: "5'8\"" },
+    { id: 4, title: "Date Of Birth", value: "06/01/2005" },
+    { id: 5, title: "Password", value: "*********" },
+    { id: 6, title: "Body Description", value: "Nice!" },
+    { id: 7, title: "Diet Description", value: "Very Nice" },
+    { id: 8, title: "Bio", value: "Stay Fit\nStay Fit\nStay Fit" },
   ];
   // Example conditions for visibility
   const [showButtonBP, setShowButtonBP] = React.useState(true);
