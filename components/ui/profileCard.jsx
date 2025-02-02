@@ -30,7 +30,7 @@ export default function ProfileCard() {
     { id: 8, title: "Bio", value: "Stay Fit\nStay Fit\nStay Fit" },
   ];
 
-  const userType = "p"; 
+  const userType = "ath_own"; 
   
   const initialStates = userType === "pro_own"
   ? {
@@ -42,17 +42,37 @@ export default function ProfileCard() {
       showCheckMark: true,
       showDetails: false
     }
-  : userType === "ath"
+  : userType === "ath_own"
   ? {
       showButtonBP: true,
-      showButtonD: true,
+      showButtonD: false,
       showButtonP: false,
       showButtonR: false,
       showButtonL: false,
       showCheckMark: false,
       showDetails: true
     }
-  : {
+    : userType === "pro_other"
+  ? {
+      showButtonBP: false,
+      showButtonD: false,
+      showButtonP: true,
+      showButtonR: false,
+      showButtonL: false,
+      showCheckMark: false,
+      showDetails: true
+    }
+  : userType === "ath_to_ath"
+  ? {
+      showButtonBP: false,
+      showButtonD: false,
+      showButtonP: false,
+      showButtonR: false,
+      showButtonL: false,
+      showCheckMark: false,
+      showDetails: true
+    }
+  : {//ath to pro
       showButtonBP: false,
       showButtonD: true,
       showButtonP: false,
