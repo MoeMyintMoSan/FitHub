@@ -59,7 +59,7 @@ export default function Post({
     <Box display="flex" justifyContent="center" alignItems="center">
       <Card
         sx={{
-          maxWidth: 900,
+          maxWidth: 800,
           borderRadius: 2,
           bgcolor: type === "trainer" ? "#2B2231" : "#222F31",
         }}

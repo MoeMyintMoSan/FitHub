@@ -61,7 +61,7 @@ const HomePage = () => {
         ]}
       />
       <div style={{ position: "fixed", bottom: "20px", right: "20px" }}>
-        <CreatePost type="trainer" />
+        <CreatePost type="nutritionist" />
         {/* The Post component will be rendered inside the layout */}
       </div>
     </Layout>
