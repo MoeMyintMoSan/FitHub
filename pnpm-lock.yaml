@@ -16,7 +16,7 @@ importers:
         version: 11.14.0(@emotion/react@11.14.0(@types/react@19.0.1)(react@19.0.0))(@types/react@19.0.1)(react@19.0.0)
       '@mui/icons-material':
         specifier: ^6.3.0
-        version: 6.4.2(@mui/material@6.1.10(@emotion/react@11.14.0(@types/react@19.0.1)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@19.0.1)(react@19.0.0))(@types/react@19.0.1)(react@19.0.0))(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@types/react@19.0.1)(react@19.0.0)
+        version: 6.3.0(@mui/material@6.1.10(@emotion/react@11.14.0(@types/react@19.0.1)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@19.0.1)(react@19.0.0))(@types/react@19.0.1)(react@19.0.0))(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@types/react@19.0.1)(react@19.0.0)
       '@mui/joy':
         specifier: 5.0.0-beta.51
         version: 5.0.0-beta.51(@emotion/react@11.14.0(@types/react@19.0.1)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@19.0.1)(react@19.0.0))(@types/react@19.0.1)(react@19.0.0))(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -401,11 +401,11 @@ packages:
   '@mui/core-downloads-tracker@6.1.10':
     resolution: {integrity: sha512-LY5wdiLCBDY7u+Od8UmFINZFGN/5ZU90fhAslf/ZtfP+5RhuY45f679pqYIxe0y54l6Gkv9PFOc8Cs10LDTBYg==}
 
-  '@mui/icons-material@6.4.2':
-    resolution: {integrity: sha512-uwsH1KRmxkJwK3NZyo1xL9pEduL16ftCnzYBYjd6nPNtm05QAoIc0aqedS9tqDV+Ab3q5C04HHOVsMDDv1EBpg==}
+  '@mui/icons-material@6.3.0':
+    resolution: {integrity: sha512-3uWws6DveDn5KxCS34p+sUNMxehuclQY6OmoJeJJ+Sfg9L7LGBpksY/nX5ywKAqickTZnn+sQyVcp963ep9jvw==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      '@mui/material': ^6.4.2
+      '@mui/material': ^6.3.0
       '@types/react': ^17.0.0 || ^18.0.0 || ^19.0.0
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
     peerDependenciesMeta:
@@ -641,16 +641,13 @@ packages:
   '@popperjs/core@2.11.8':
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
 
-  '@prisma/client@6.3.0':
-    resolution: {integrity: sha512-BY3Fi28PUSk447Bpv22LhZp4HgNPo7NsEN+EteM1CLDnLjig5863jpW+3c3HHLFmml+nB/eJv1CjSriFZ8z7Cg==}
+  '@prisma/client@6.1.0':
+    resolution: {integrity: sha512-AbQYc5+EJKm1Ydfq3KxwcGiy7wIbm4/QbjCKWWoNROtvy7d6a3gmAGkKjK0iUCzh+rHV8xDhD5Cge8ke/kiy5Q==}
     engines: {node: '>=18.18'}
     peerDependencies:
       prisma: '*'
-      typescript: '>=5.1.0'
     peerDependenciesMeta:
       prisma:
-        optional: true
-      typescript:
         optional: true
 
   '@rc-component/async-validator@5.0.4':
@@ -2976,7 +2973,7 @@ snapshots:
 
   '@mui/core-downloads-tracker@6.1.10': {}
 
-  '@mui/icons-material@6.4.2(@mui/material@6.1.10(@emotion/react@11.14.0(@types/react@19.0.1)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@19.0.1)(react@19.0.0))(@types/react@19.0.1)(react@19.0.0))(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@types/react@19.0.1)(react@19.0.0)':
+  '@mui/icons-material@6.3.0(@mui/material@6.1.10(@emotion/react@11.14.0(@types/react@19.0.1)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@19.0.1)(react@19.0.0))(@types/react@19.0.1)(react@19.0.0))(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@types/react@19.0.1)(react@19.0.0)':
     dependencies:
       '@babel/runtime': 7.26.0
       '@mui/material': 6.1.10(@emotion/react@11.14.0(@types/react@19.0.1)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@19.0.1)(react@19.0.0))(@types/react@19.0.1)(react@19.0.0))(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -3181,12 +3178,6 @@ snapshots:
   '@popperjs/core@2.11.8': {}
 
   '@prisma/client@6.1.0': {}
-
-  '@prisma/client@6.1.0': {}
-
-  '@prisma/client@6.3.0(typescript@5.7.2)':
-    optionalDependencies:
-      typescript: 5.7.2
 
   '@rc-component/async-validator@5.0.4':
     dependencies:
