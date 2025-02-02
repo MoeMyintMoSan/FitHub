@@ -29,15 +29,47 @@ export default function ProfileCard() {
     { id: 7, title: "Diet Description", value: "Very Nice" },
     { id: 8, title: "Bio", value: "Stay Fit\nStay Fit\nStay Fit" },
   ];
-  // Example conditions for visibility
-  const [showButtonBP, setShowButtonBP] = React.useState(true);
-  const [showButtonD, setShowButtonD] = React.useState(true);
-  const [showButtonP, setShowButtonP] = React.useState(false);
-  const [showButtonR, setShowButtonR] = React.useState(false);
-  const [showButtonL, setShowButtonL] = React.useState(false);
-  const [showCheckMark, setShowCheckMark] = React.useState(true);
-  const [showDetails, setShowDetails] = React.useState(false);
 
+  const userType = "p"; 
+  
+  const initialStates = userType === "pro_own"
+  ? {
+      showButtonBP: false,
+      showButtonD: true,
+      showButtonP: false,
+      showButtonR: false,
+      showButtonL: false,
+      showCheckMark: true,
+      showDetails: false
+    }
+  : userType === "ath"
+  ? {
+      showButtonBP: true,
+      showButtonD: true,
+      showButtonP: false,
+      showButtonR: false,
+      showButtonL: false,
+      showCheckMark: false,
+      showDetails: true
+    }
+  : {
+      showButtonBP: false,
+      showButtonD: true,
+      showButtonP: false,
+      showButtonR: true,
+      showButtonL: true,
+      showCheckMark: false,
+      showDetails: false
+    };
+  
+  const [showButtonBP, setShowButtonBP] = React.useState(initialStates.showButtonBP);
+  const [showButtonD, setShowButtonD] = React.useState(initialStates.showButtonD);
+  const [showButtonP, setShowButtonP] = React.useState(initialStates.showButtonP);
+  const [showButtonR, setShowButtonR] = React.useState(initialStates.showButtonR);
+  const [showButtonL, setShowButtonL] = React.useState(initialStates.showButtonL);
+  const [showCheckMark, setShowCheckMark] = React.useState(initialStates.showCheckMark);
+  const [showDetails, setShowDetails] = React.useState(initialStates.showDetails);
+  
   const [fields, setFields] = React.useState(initialFields);
   const [hasChanges, setHasChanges] = React.useState(false);
   const [openModal, setOpenModal] = React.useState(false);
