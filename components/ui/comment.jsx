@@ -44,21 +44,31 @@ export default function Comment({ onClose }) {
 
       {/* Comment Section */}
       <DialogContent sx={{ flex: 1, overflowY: "auto" }}>
-        {["User1", "User2", "User3", "User4", "User5","User6","User7","User8","User9"].map((user, index) => (
-          <Box
-            key={index}
-            m={1}
-            sx={{
-              bgcolor: "#283138",
-              p: 1,
-              borderRadius: 2,
-            }}
-          >
+          <Box m={1} sx={{bgcolor: "#283138",p: 1, borderRadius: 2,}}>
             <Typography variant="body2" color="white">
-              <strong>{user}:</strong> This is a great post!
+              <strong>User1:</strong> This is a great post!
             </Typography>
           </Box>
-        ))}
+          <Box m={1} sx={{bgcolor: "#283138",p: 1, borderRadius: 2,}}>
+          <Typography variant="body2" color="white">
+              <strong>kali_123: </strong> Your dedication is seriously inspiring! 🔥 Fitness isn’t just about looking good—it’s about feeling strong, confident, and unstoppable. Keep pushing your limits!
+            </Typography>
+          </Box>
+          <Box m={1} sx={{bgcolor: "#283138",p: 1, borderRadius: 2,}}>
+          <Typography variant="body2" color="white">
+              <strong>potter_lol: </strong> This is the kind of motivation I needed today! Consistency and discipline make all the difference. Keep crushing those goals! 💪👏
+            </Typography>
+          </Box>
+          <Box m={1} sx={{bgcolor: "#283138",p: 1, borderRadius: 2,}}>
+          <Typography variant="body2" color="white">
+              <strong>moesan_lol: </strong> Incredible progress! Fitness is a journey, and you’re proving that hard work and persistence pay off. Keep going strong! 🚀
+            </Typography>
+          </Box>
+          <Box m={1} sx={{bgcolor: "#283138",p: 1, borderRadius: 2,}}>
+          <Typography variant="body2" color="white">
+              <strong>noenoe_lol: </strong> The energy and effort you put in are next-level! Fitness isn’t just about the results, but the process—and you’re making it look effortless! 🔥💯
+            </Typography>
+          </Box>
       </DialogContent>
 
       {/* Input Field Sticking to Bottom */}
