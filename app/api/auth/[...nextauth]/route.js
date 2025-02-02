@@ -52,8 +52,8 @@ const authOptions = {
     },
   },
   pages: {
-    signIn: "/page",
-    error: "/page",
+    signIn: "/",
+    error: "/",
   },
 };
 

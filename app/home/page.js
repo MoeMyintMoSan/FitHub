@@ -5,7 +5,7 @@ import { useSession, signIn } from "next-auth/react"; // Import session and sign
 import { useRouter } from "next/navigation";
 
 import Post from "@/components/ui/post";
-import CreatePost from "@/components/ui/create_post"; // Import the Post component
+import CreatePost from "@/components/ui/createPost"; // Import the Post component
 
 const HomePage = () => {
   const { data: session, status } = useSession();
@@ -13,7 +13,7 @@ const HomePage = () => {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/page"); // Redirect to sign-in if not authenticated
+      router.push("/"); // Redirect to sign-in if not authenticated
     }
   }, [status, router]);
 
