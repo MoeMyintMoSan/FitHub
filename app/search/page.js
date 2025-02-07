@@ -22,7 +22,7 @@ const SearchPage = () => {
   // Filter posts based on search term
   const filteredPosts = searchTerm
     ? posts.filter((post) =>
-        post.title.toLowerCase().includes(searchTerm.toLowerCase())
+        post.content.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : [];
 
