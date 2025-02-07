@@ -30,7 +30,7 @@ export default function ProfileCard() {
     { id: 8, title: "Bio", value: "Stay Fit\nStay Fit\nStay Fit" },
   ];
 
-  const userType = "ath_own"; 
+  const userType = "ath_to_ath"; 
   
   const initialStates = userType === "pro_own"
   ? {
