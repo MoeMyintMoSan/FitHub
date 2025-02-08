@@ -1,9 +1,7 @@
 
 // lib/db.js
-import { Pool } from 'pg';
+import { neon } from "@neondatabase/serverless";
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL, 
-});
-
-export default pool;
+const sql = neon(process.env.DATABASE_URL);
+console.log("SQL",sql);
+export default sql;

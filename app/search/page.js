@@ -1,51 +1,62 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "@/components/ui/layout";
 import { Tabs, Tab, Box, TextField, Typography, Chip, Grid } from "@mui/material";
-import proData from "@/app/api/jsons/pro.json";
-import postData from "@/app/api/jsons/post.json";
-import Post from "@/components/ui/post"; // Import the Post component
+import Post from "@/components/ui/post";
 
 const SearchPage = () => {
-  const [tab, setTab] = useState(0); // 0 for "Account", 1 for "Post"
+  const [tab, setTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const accounts = proData; // Use imported proData directly
-  const posts = postData; // Use imported postData directly
+  const [results, setResults] = useState([]);
 
-  // Filter accounts based on search term
-  const filteredAccounts = searchTerm
-    ? accounts.filter((account) =>
-        account.user_name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : [];
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setResults([]);
+      return;
+    }
 
-  // Filter posts based on search term
-  const filteredPosts = searchTerm
-    ? posts.filter((post) =>
-        post.content.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : [];
+    const fetchResults = async () => {
+      try {
+        const type = tab === 0 ? "account" : "post"; // Define type correctly
+        const response = await fetch("/api/search", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ searchTerm, type }),
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        const data = await response.json();
+        setResults(data);
+      } catch (error) {
+        console.error("Error fetching search results:", error);
+        setResults([]);
+      }
+    };
+
+    fetchResults();
+  }, [searchTerm, tab]);
 
   return (
     <Layout pathname={"/search"}>
       <Box sx={{ width: "100%" }}>
-      <Tabs
-        value={tab}
-        onChange={(event, newValue) => setTab(newValue)}
-        TabIndicatorProps={{ style: { backgroundColor: "#ED6262" } }}
-        sx={{
-          "& .MuiTab-root": { color: "#ffffff" }, // Default color
-          "& .MuiTab-root.Mui-selected": { color: "#FF9999" }, // Selected tab color
-        }}
-      >
-        <Tab label="Account" />
-        <Tab label="Post" />
-      </Tabs>
-
+        <Tabs
+          value={tab}
+          onChange={(event, newValue) => setTab(newValue)}
+          TabIndicatorProps={{ style: { backgroundColor: "#ED6262" } }}
+          sx={{
+            "& .MuiTab-root": { color: "#ffffff" },
+            "& .MuiTab-root.Mui-selected": { color: "#FF9999" },
+          }}
+        >
+          <Tab label="Account" />
+          <Tab label="Post" />
+        </Tabs>
       </Box>
 
       <Box sx={{ mt: 2 }}>
-        {/* Search Bar */}
         <TextField
           fullWidth
           variant="outlined"
@@ -64,11 +75,10 @@ const SearchPage = () => {
           }}
         />
 
-        {/* Results */}
         <Box sx={{ mt: 3 }}>
           {tab === 0 ? (
-            filteredAccounts.length > 0 ? (
-              filteredAccounts.map((account) => (
+            results.length > 0 ? (
+              results.map((account) => (
                 <Box
                   key={account.pro_id}
                   sx={{
@@ -86,7 +96,7 @@ const SearchPage = () => {
                   </Typography>
 
                   <Chip
-                    label={account.pro_type}
+                    label={account.user_type}
                     sx={{
                       color: account.pro_type === "trainer" ? "#00BFA5" : "#9C27B0",
                       fontWeight: "bold",
@@ -106,27 +116,25 @@ const SearchPage = () => {
                 {searchTerm ? "No accounts found." : "Enter a search term to find accounts."}
               </Typography>
             )
+          ) : results.length > 0 ? (
+            <Grid container spacing={3}>
+              {results.map((post) => (
+                <Grid item xs={12} key={post.post_id}>
+                  <Post
+                    type={post.content_type}
+                    title={post.title}
+                    subheader={post.created_date}
+                    image={post.image}
+                    mainContent={post.content}
+                    likeCount={post.like_count}
+                  />
+                </Grid>
+              ))}
+            </Grid>
           ) : (
-            filteredPosts.length > 0 ? (
-              <Grid container spacing={3}>
-                {filteredPosts.map((post) => (
-                  <Grid item xs={12} key={post.post_id}>
-                    <Post
-                      type={post.content_type}
-                      title={post.title}
-                      subheader={post.created_date}
-                      image={post.image}
-                      mainContent={post.content}
-                      likeCount={post.like_count}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
-            ) : (
-              <Typography sx={{ color: "white" }}>
-                {searchTerm ? "No posts found." : "Enter a search term to find posts."}
-              </Typography>
-            )
+            <Typography sx={{ color: "white" }}>
+              {searchTerm ? "No posts found." : "Enter a search term to find posts."}
+            </Typography>
           )}
         </Box>
       </Box>
