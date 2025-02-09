@@ -16,11 +16,11 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, CircularProgress } from "@mui/material";
 import dynamic from "next/dynamic";
+
 const Comment = dynamic(() => import("./comment"), { ssr: false });
 
-// ExpandMore IconButton Styling
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
   return <IconButton {...other} />;
@@ -32,28 +32,74 @@ const ExpandMore = styled((props) => {
   transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
 }));
 
-
-export default function Post({
-  type,
-  avatarLabel = "R",
-  title = "Default Title",
-  subheader = "Default Date",
-  image = "https://via.placeholder.com/550x250",
-  imageAlt = "Default Image",
-  mainContent = "Default main content",
-  listItems = [],
-  secondaryListItems = [],
-  tertiaryListItems = [],
-  expandedDescriptions = [],
-}) {
+export default function Post({ post_id }) {
+  const [post, setPost] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
   const [expanded, setExpanded] = React.useState(false);
   const [showComment, setShowComment] = React.useState(false);
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
-  const toggleComment = () => {
-    setShowComment((prev) => !prev);
-  };
+  const [listGroups, setListGroups] = React.useState([]);
+  const [contentType, setContentType] = React.useState("");
+
+  React.useEffect(() => {
+    async function fetchPost() {
+      try {
+        const res = await fetch(`/api/posts/${post_id}`);
+        if (!res.ok) throw new Error("Failed to fetch post");
+        const data = await res.json();
+        setPost(data);
+        setContentType(data.content_type);
+
+        let groups = [];
+
+        if (data.content_type === "Trainer") {
+          groups.push({ title: "Exercises", items: [data.exercise] });
+          groups.push({ title: "Reps", items: [data.reps.toString()] });
+          groups.push({ title: "Sets", items: [data.sets.toString()] });
+        } else if (data.content_type === "Nutritionist") {
+          groups.push({ title: "Food Items", items: [data.food_item] });
+          groups.push({ title: "Calories", items: [data.calories.toString()] });
+        }
+        setListGroups(groups);
+      } catch (error) {
+        console.error("Error fetching post:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPost();
+  }, [post_id]);
+
+  if (loading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!post) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
+        <Typography variant="h6" color="error">
+          Post not found
+        </Typography>
+      </Box>
+    );
+  }
+
+  const handleExpandClick = () => setExpanded(!expanded);
+  const toggleComment = () => setShowComment((prev) => !prev);
 
   return (
     <Box display="flex" justifyContent="center" alignItems="center">
@@ -61,120 +107,65 @@ export default function Post({
         sx={{
           maxWidth: 800,
           borderRadius: 2,
-          bgcolor: type === "trainer" ? "#2B2231" : "#222F31",
+          bgcolor:
+            post.content_type === "Trainer"
+              ? "#2B2231"
+              : post.content_type === "Nutritionist"
+              ? "#222F31"
+              : "#2B2231",
         }}
       >
-        {/* Card Header */}
         <CardHeader
-          avatar={<Avatar sx={{ bgcolor: red[500] }}>{avatarLabel}</Avatar>}
+          avatar={
+            <Avatar sx={{ bgcolor: red[500] }}>
+              {post.user_name.charAt(0).toUpperCase()}
+            </Avatar>
+          }
           action={
             <IconButton aria-label="settings" sx={{ color: "white" }}>
               <MoreVertIcon />
             </IconButton>
           }
-          title={title}
-          subheader={subheader}
+          title={post.title}
+          subheader={post.created_date}
           sx={{ color: blueGrey[50] }}
           subheaderTypographyProps={{ sx: { color: blueGrey[200] } }}
         />
 
-        {/* Media and Content Section */}
         <Grid container>
           <Grid item xs={6} sx={{ ml: 2 }}>
             <CardMedia
               component="img"
-              image={image}
-              alt={imageAlt}
+              image={post.image || "https://via.placeholder.com/550x250"}
+              alt={post.title}
               sx={{ height: "250px", width: "550px", borderRadius: 4 }}
             />
           </Grid>
           <Grid item xs={5} sx={{ ml: 2 }}>
             <CardContent>
               <Typography variant="body2" sx={{ color: "white", fontSize: 18 }}>
-                {mainContent}
+                {post.title}
               </Typography>
             </CardContent>
-
-            {/* Lists */}
             <Grid container sx={{ ml: 2 }} spacing={2}>
-              <Grid item xs={4}>
-                {listItems.length > 0 && (
-                  <>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "white", fontSize: 14 }}
-                    >
-                      {type === "trainer" ? "Exercises" : "Food"}
-                    </Typography>
-                    {listItems.map((item, index) => (
-                      <Typography
-                        key={index}
-                        variant="body2"
-                        sx={{
-                          color: "white",
-                          fontSize: 14,
-                          bgcolor: "#283138",
-                          mt: 1,
-                          pt: 0.5,
-                          pl: 1,
-                          mr: 2,
-                          pb: 0.5,
-                          borderRadius: 1,
-                        }}
-                      >
-                        {item}
-                      </Typography>
-                    ))}
-                  </>
-                )}
-              </Grid>
-              <Grid item xs={4}>
-                {secondaryListItems.length > 0 && (
-                  <>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "white", fontSize: 14 }}
-                    >
-                      {type === "trainer" ? "Reps" : "Calories"}
-                    </Typography>
-                    {secondaryListItems.map((item, index) => (
-                      <Typography
-                        key={index}
-                        variant="body2"
-                        sx={{
-                          color: "white",
-                          fontSize: 14,
-                          bgcolor: "#283138",
-                          mt: 1,
-                          pt: 0.5,
-                          pl: 1,
-                          mr: 2,
-                          pb: 0.5,
-                          borderRadius: 1,
-                        }}
-                      >
-                        {item}
-                      </Typography>
-                    ))}
-                  </>
-                )}
-              </Grid>
-              {tertiaryListItems.length > 0 && type === "trainer" && (
-                <Grid item xs={4}>
+          {listGroups.map((group, groupIndex) => (
+            <Grid item xs={4} key={groupIndex}>
+              {group.items.length > 0 && (
+                <>
                   <Typography
                     variant="body2"
                     sx={{ color: "white", fontSize: 14 }}
                   >
-                    Sets
+                    {group.title}
                   </Typography>
-                  {tertiaryListItems.map((item, index) => (
+                  {group.items.map((item, index) => (
                     <Typography
                       key={index}
                       variant="body2"
                       sx={{
                         color: "white",
                         fontSize: 14,
-                        bgcolor: "#283138",
+                        bgcolor:"#283138", 
                         mt: 1,
                         pt: 0.5,
                         pl: 1,
@@ -186,18 +177,22 @@ export default function Post({
                       {item}
                     </Typography>
                   ))}
-                </Grid>
+                </>
               )}
             </Grid>
+          ))}
+        </Grid>
           </Grid>
         </Grid>
-
-        {/* Action Buttons */}
         <CardActions disableSpacing>
           <IconButton aria-label="add to favorites" sx={{ color: "white" }}>
             <FavoriteIcon />
           </IconButton>
-          <IconButton onClick={toggleComment} aria-label="comment" sx={{ color: "white" }}>
+          <IconButton
+            onClick={toggleComment}
+            aria-label="comment"
+            sx={{ color: "white" }}
+          >
             <ModeCommentIcon />
           </IconButton>
           <ExpandMore
@@ -211,25 +206,18 @@ export default function Post({
           </ExpandMore>
         </CardActions>
 
-        {/* Collapsible Section */}
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
             <Typography sx={{ marginBottom: 2, color: "white" }}>
               Descriptions:
             </Typography>
-            {expandedDescriptions.map((desc, index) => (
-              <Typography
-                key={index}
-                sx={{ marginBottom: 2, color: "white" }}
-              >
-                {desc}
-              </Typography>
-            ))}
+            <Typography sx={{ marginBottom: 2, color: "white" }}>
+              {post.content || "No additional details provided"}
+            </Typography>
           </CardContent>
         </Collapse>
       </Card>
-        {/* Comment Section */}
-        {showComment && <Comment onClose={toggleComment} />}
+      {showComment && <Comment onClose={toggleComment} />}
     </Box>
   );
 }
