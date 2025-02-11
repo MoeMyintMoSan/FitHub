@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function SignUp() {
+  const [user_name, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -16,27 +17,71 @@ export default function SignUp() {
     event.preventDefault();
     setLoading(true);
     setError(null);
-
+  
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       setLoading(false);
       return;
     }
 
-    if (!dob) {
-      setError("Please enter your date of birth");
+     // Validate required fields
+     if (!user_name || !email || !password || !dob) {
+      setError("Please fill in all required fields");
       setLoading(false);
       return;
     }
-
-    // Simulate a signup request
-    setTimeout(() => {
-      setLoading(false);
-      if (typeof window !== "undefined") {
-        window.location.href = "/home"; // Redirect manually to /home after successful signup
-      }
-    }, 1500);
+  
+    const userData = {
+      user_name, // Replace with actual input field value
+      email,
+      user_password: password,
+      user_type: "Athlete", // Replace with actual input field value
+      date_of_birth: dob,
+      height: "180.50", // Replace with actual input field value
+      weight: "75.30", // Replace with actual input field value
+      body_description: "undefined build", // Replace with actual input field value
+      diet_description: "undefined diet", // Replace with actual input field value
+    };
+  
+    const response = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...userData, action: 'signup' }),
+    });
+  
+    const data = await response.json();
+    if (response.ok) {
+      router.push('/home');
+    } else {
+      setError(data.error);
+    }
+    setLoading(false);
   };
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+  //   setLoading(true);
+  //   setError(null);
+
+  //   if (password !== confirmPassword) {
+  //     setError("Passwords do not match");
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   if (!dob) {
+  //     setError("Please enter your date of birth");
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   // Simulate a signup request
+  //   setTimeout(() => {
+  //     setLoading(false);
+  //     if (typeof window !== "undefined") {
+  //       window.location.href = "/home"; // Redirect manually to /home after successful signup
+  //     }
+  //   }, 1500);
+  // };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0E1113]">
@@ -51,6 +96,24 @@ export default function SignUp() {
           </div>
         )}
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label
+              htmlFor="user_name"
+              className="block text-sm font-medium text-white"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              id="user_name"
+              name="user_name"
+              value={user_name}
+              onChange={(e) => setUserName(e.target.value)}
+              required
+              placeholder="Enter your username"
+              className="mt-1 block w-full p-2 border border-gray-600 rounded-md bg-[#0E1113] text-white placeholder-gray-400 shadow-sm focus:outline-none focus:ring-[#FD6262] focus:border-[#FD6262]"
+            />
+          </div>
           <div>
             <label
               htmlFor="email"
