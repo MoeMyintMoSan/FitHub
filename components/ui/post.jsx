@@ -38,7 +38,6 @@ export default function Post({ post_id }) {
   const [expanded, setExpanded] = React.useState(false);
   const [showComment, setShowComment] = React.useState(false);
   const [listGroups, setListGroups] = React.useState([]);
-  const [contentType, setContentType] = React.useState("");
 
   React.useEffect(() => {
     async function fetchPost() {
@@ -47,18 +46,21 @@ export default function Post({ post_id }) {
         if (!res.ok) throw new Error("Failed to fetch post");
         const data = await res.json();
         setPost(data);
-        setContentType(data.content_type);
 
         let groups = [];
 
         if (data.content_type === "Trainer") {
-          groups.push({ title: "Exercises", items: [data.exercise] });
-          groups.push({ title: "Reps", items: [data.reps.toString()] });
-          groups.push({ title: "Sets", items: [data.sets.toString()] });
+          groups.push({
+            title: "Exercises",
+            items: data.details.map((d) => `${d.exercise} (Sets: ${d.sets}, Reps: ${d.reps})`),
+          });
         } else if (data.content_type === "Nutritionist") {
-          groups.push({ title: "Food Items", items: [data.food_item] });
-          groups.push({ title: "Calories", items: [data.calories.toString()] });
+          groups.push({
+            title: "Food Items",
+            items: data.details.map((d) => `${d.food} - ${d.calories} kcal`),
+          });
         }
+
         setListGroups(groups);
       } catch (error) {
         console.error("Error fetching post:", error);
@@ -133,7 +135,7 @@ export default function Post({ post_id }) {
         />
 
         <Grid container>
-          <Grid item xs={6} sx={{ ml: 2 }}>
+          <Grid item xs={5} sx={{ ml: 2 }}>
             <CardMedia
               component="img"
               image={post.image || "https://via.placeholder.com/550x250"}
@@ -141,17 +143,15 @@ export default function Post({ post_id }) {
               sx={{ height: "250px", width: "550px", borderRadius: 4 }}
             />
           </Grid>
-          <Grid item xs={5} sx={{ ml: 2 }}>
+          <Grid item xs={6} sx={{ ml: 2 }}>
             <CardContent>
               <Typography variant="body2" sx={{ color: "white", fontSize: 18 }}>
                 {post.title}
               </Typography>
             </CardContent>
             <Grid container sx={{ ml: 2 }} spacing={2}>
-          {listGroups.map((group, groupIndex) => (
-            <Grid item xs={4} key={groupIndex}>
-              {group.items.length > 0 && (
-                <>
+              {listGroups.map((group, groupIndex) => (
+                <Grid item xs={12} key={groupIndex}>
                   <Typography
                     variant="body2"
                     sx={{ color: "white", fontSize: 14 }}
@@ -165,7 +165,7 @@ export default function Post({ post_id }) {
                       sx={{
                         color: "white",
                         fontSize: 14,
-                        bgcolor:"#283138", 
+                        bgcolor: "#283138",
                         mt: 1,
                         pt: 0.5,
                         pl: 1,
@@ -177,11 +177,9 @@ export default function Post({ post_id }) {
                       {item}
                     </Typography>
                   ))}
-                </>
-              )}
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
           </Grid>
         </Grid>
         <CardActions disableSpacing>
@@ -217,7 +215,7 @@ export default function Post({ post_id }) {
           </CardContent>
         </Collapse>
       </Card>
-      {showComment && <Comment onClose={toggleComment} />}
+      {showComment && <Comment postId={post.post_id} onClose={toggleComment} />}
     </Box>
   );
 }
