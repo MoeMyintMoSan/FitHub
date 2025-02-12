@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import React, { useState, useEffect } from 'react';
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -15,97 +15,150 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import CustomButton from "./profileButtons";
 import CusBox from "./cusBox";
+import DetailBox from '../detailBox';
 import Post from "./post";
 
-export default function ProfileCard() {
-  // Example fields for profile information
-  const initialFields = [
-    { id: 1, title: "Name", value: "AA" },
-    { id: 2, title: "Weight", value: "69 KG" },
-    { id: 3, title: "Height", value: "5'8\"" },
-    { id: 4, title: "Date Of Birth", value: "06/01/2005" },
-    { id: 5, title: "Password", value: "*********" },
-    { id: 6, title: "Body Description", value: "Nice!" },
-    { id: 7, title: "Diet Description", value: "Very Nice" },
-    { id: 8, title: "Bio", value: "Stay Fit\nStay Fit\nStay Fit" },
-  ];
-
-  const userType = "ath_to_ath"; 
+export default function ProfileCard({ user1, user2 }) {
+  const [userData, setUserData] = useState(null);
+  const [originalUserData, setOriginalUserData] = useState(null);
   
-  const initialStates = userType === "pro_own"
-  ? {
-      showButtonBP: false,
-      showButtonD: true,
-      showButtonP: false,
-      showButtonR: false,
-      showButtonL: false,
-      showCheckMark: true,
-      showDetails: false
-    }
-  : userType === "ath_own"
-  ? {
-      showButtonBP: true,
-      showButtonD: false,
-      showButtonP: false,
-      showButtonR: false,
-      showButtonL: false,
-      showCheckMark: false,
-      showDetails: true
-    }
-    : userType === "pro_other"
-  ? {
-      showButtonBP: false,
-      showButtonD: false,
-      showButtonP: true,
-      showButtonR: false,
-      showButtonL: false,
-      showCheckMark: false,
-      showDetails: true
-    }
-  : userType === "ath_to_ath"
-  ? {
-      showButtonBP: false,
-      showButtonD: false,
-      showButtonP: false,
-      showButtonR: false,
-      showButtonL: false,
-      showCheckMark: false,
-      showDetails: true
-    }
-  : {//ath to pro
-      showButtonBP: false,
-      showButtonD: true,
-      showButtonP: false,
-      showButtonR: true,
-      showButtonL: true,
-      showCheckMark: false,
-      showDetails: false
-    };
+  const [showButtonBP, setShowButtonBP] = useState(false);
+  const [showButtonD, setShowButtonD] = useState(false);
+  const [showButtonP, setShowButtonP] = useState(false);
+  const [showButtonR, setShowButtonR] = useState(false);
+  const [showButtonL, setShowButtonL] = useState(false);
+  const [showCheckMark, setShowCheckMark] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   
-  const [showButtonBP, setShowButtonBP] = React.useState(initialStates.showButtonBP);
-  const [showButtonD, setShowButtonD] = React.useState(initialStates.showButtonD);
-  const [showButtonP, setShowButtonP] = React.useState(initialStates.showButtonP);
-  const [showButtonR, setShowButtonR] = React.useState(initialStates.showButtonR);
-  const [showButtonL, setShowButtonL] = React.useState(initialStates.showButtonL);
-  const [showCheckMark, setShowCheckMark] = React.useState(initialStates.showCheckMark);
-  const [showDetails, setShowDetails] = React.useState(initialStates.showDetails);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+
+  const self = user1 === user2;
+
+  useEffect(() => {
+    fetch(`/api/users?email=${encodeURIComponent(user2)}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Fetched user:", data);
+        setUserData(data);  // Store fetched data in state
+        setOriginalUserData(data);  // Store original data in state
+      })
+      .catch(error => console.error("Error fetching user:", error));
+
+    if (self) {
+      setShowButtonBP(true);
+      setShowButtonD(false);
+      setShowButtonP(false);
+      setShowButtonR(false);
+      setShowButtonL(false);
+      setShowCheckMark(false);
+      setShowDetails(true);
+    }
+  }, [user1, user2]);
   
-  const [fields, setFields] = React.useState(initialFields);
-  const [hasChanges, setHasChanges] = React.useState(false);
-  const [openModal, setOpenModal] = React.useState(false);
+  async function checkCondition(user1, user2) {
+    if (user1 === user2) {
+      setShowButtonBP(true);
+      setShowButtonD(false);
+      setShowButtonP(false);
+      setShowButtonR(false);
+      setShowButtonL(false);
+      setShowCheckMark(false);
+      setShowDetails(true);
+    } else {
+      //     const userType = "ath_to_ath";
+      // const initialStates = user1 === user2
+      // ? {
+      //     showButtonBP: false,
+      //     showButtonD: true,
+      //     showButtonP: false,
+      //     showButtonR: false,
+      //     showButtonL: false,
+      //     showCheckMark: true,
+      //     showDetails: false
+      //   }
+      // : userType === "ath_own"
+      // ? {
+      //     showButtonBP: true,
+      //     showButtonD: false,
+      //     showButtonP: false,
+      //     showButtonR: false,
+      //     showButtonL: false,
+      //     showCheckMark: false,
+      //     showDetails: true
+      //   }
+      //   : userType === "pro_other"
+      // ? {
+      //     showButtonBP: false,
+      //     showButtonD: false,
+      //     showButtonP: true,
+      //     showButtonR: false,
+      //     showButtonL: false,
+      //     showCheckMark: false,
+      //     showDetails: true
+      //   }
+      // : userType === "ath_to_ath"
+      // ? {
+      //     showButtonBP: false,
+      //     showButtonD: false,
+      //     showButtonP: false,
+      //     showButtonR: false,
+      //     showButtonL: false,
+      //     showCheckMark: false,
+      //     showDetails: true
+      //   }
+      // : {//ath to pro
+      //     showButtonBP: false,
+      //     showButtonD: true,
+      //     showButtonP: false,
+      //     showButtonR: true,
+      //     showButtonL: true,
+      //     showCheckMark: false,
+      //     showDetails: false
+      //   };
+    }
+  }
 
-  const handleInputChange = (id, newValue) => {
-    const updatedFields = fields.map((field) =>
-      field.id === id ? { ...field, value: newValue } : field
-    );
-
-    setFields(updatedFields);
-
-    // Check if there are changes compared to initial values
-    const changesExist = updatedFields.some(
-      (field, index) => field.value !== initialFields[index].value
-    );
-    setHasChanges(changesExist);
+  const handleInputChange = (field, value) => {
+    setUserData((prev) => {
+      const updatedData = { ...prev };
+      switch (field) {
+        case 1:
+          updatedData.user_name = value;
+          break;
+        case 2:
+          updatedData.weight = value;
+          break;
+        case 3:
+          updatedData.height = value;
+          break;
+        case 4:
+          updatedData.date_of_birth = value;
+          break;
+        case 5:
+          updatedData.user_password = value;
+          break;
+        case 6:
+          updatedData.body_description = value;
+          break;
+        case 7:
+          updatedData.diet_description = value;
+          break;
+        case 8:
+          updatedData.bio = value;
+          break;
+        default:
+          break;
+      }
+          // Compare updated data with original
+    const hasChanged = JSON.stringify(updatedData) !== JSON.stringify(originalUserData);
+    setHasChanges(hasChanged);
+    
+    return updatedData;
+    });
   };
 
   const saveChanges = () => {
@@ -121,6 +174,12 @@ export default function ProfileCard() {
 
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
+
+  const formatDate = (utcDate) => {
+    if (!utcDate) return "";  // Handle null values safely
+    const date = new Date(utcDate);
+    return date.toISOString().split("T")[0]; // Extract only YYYY-MM-DD
+  };  
 
   return (
     <React.Fragment>
@@ -141,7 +200,7 @@ export default function ProfileCard() {
             width: 900,
             padding: 5,
             borderRadius: 2,
-            bgcolor: "#2B2231",
+            bgcolor: userData?.user_type === 'Athlete' ? "#181D21" : (userData?.user_type === 'Trainer' ? "#2B2231" : "#222F31"),
           }}
         >
           <CardHeader
@@ -160,7 +219,7 @@ export default function ProfileCard() {
                 }}
                 aria-label="recipe"
               >
-                K
+                {userData?.user_name[0]} {/* Display first letter of the name */}
               </Avatar>
             }
             action={
@@ -202,7 +261,7 @@ export default function ProfileCard() {
             }
             title={
               <Box sx={{ marginTop: 2 }} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                KyawGyi_Fitness
+                {userData?.user_name}
                 {showCheckMark && (
                   <CheckCircleIcon
                     sx={{
@@ -228,7 +287,7 @@ export default function ProfileCard() {
                     color: "#FFFFFF",
                   }}
                 >
-                  kyawgyi.fitness@gmail.com
+                  {userData?.email}
                 </Typography>
                 {!showDetails && (
                   <div>
@@ -265,7 +324,7 @@ export default function ProfileCard() {
                   gap: 3,
                 }}
               >
-                {/* Left Fields */}
+                {/* Left Column */}
                 <Box sx={{
                   flex: "1",
                   minWidth: "300px",
@@ -273,31 +332,11 @@ export default function ProfileCard() {
                   gap: "10px", // Adjust the gap between the boxes
                   width: "100%",
                 }}>
-                  {fields.slice(0, 5).map((field) => (
-                    <Box key={field.id}>
-                      <Typography
-                        variant="caption"
-                        sx={{ fontWeight: "bold", color: "#849298" }}
-                      >
-                        {field.title}
-                      </Typography>
-                      <TextField
-                        value={field.value}
-                        onChange={(e) => handleInputChange(field.id, e.target.value)}
-                        variant="outlined"
-                        fullWidth
-                        sx={{
-                          width: "100%",
-                          "& .MuiInputBase-input": {
-                            fontSize: "1.25rem", // Change font size of the input text
-                            padding: "10px", // Adjust padding inside the text field
-                          },
-                          backgroundColor: "#2A3236",
-                        }}
-                        inputProps={{ style: { color: "#FFFFFF" } }}
-                      />
-                    </Box>
-                  ))}
+                  <DetailBox dataTitle="Display Name" dataValue={userData?.user_name} onChange={(value) => handleInputChange(1, value)} />
+                  <DetailBox dataTitle="Weight" dataValue={userData?.weight} onChange={(value) => handleInputChange(2, value)} />
+                  <DetailBox dataTitle="Height" dataValue={userData?.height} onChange={(value) => handleInputChange(3, value)} />
+                  <DetailBox dataTitle="Date Of Birth" dataValue={formatDate(userData?.date_of_birth)} disable={true}/>
+                  {self && (<DetailBox dataTitle="Password" dataValue={userData?.user_password} onChange={(value) => handleInputChange(5, value)} />)}
                 </Box>
 
                 {/* Right Column */}
@@ -308,32 +347,11 @@ export default function ProfileCard() {
                   gap: "10px", // Adjust the gap between the boxes
                   width: "100%",
                 }}>
-                  {fields.slice(5).map((field) => (
-                    <Box key={field.id}>
-                      <Typography
-                        variant="caption"
-                        sx={{ fontWeight: "bold", color: "#849298" }}
-                      >
-                        {field.title}
-                      </Typography>
-                      <TextField
-                        value={field.value}
-                        onChange={(e) => handleInputChange(field.id, e.target.value)}
-                        variant="outlined"
-                        fullWidth
-                        multiline // Enable multiline
-                        sx={{
-                          width: "100%", // Full width, you can change to any specific size like 300px
-                          "& .MuiInputBase-input": {
-                            fontSize: "1.25rem", // Change font size of the input text
-                            padding: "10px", // Adjust padding inside the text field
-                          },
-                          backgroundColor: "#2A3236",
-                        }}
-                        inputProps={{ style: { color: "#FFFFFF" } }}
-                      />
-                    </Box>
-                  ))}
+                  <DetailBox dataTitle={"Body Description"} dataValue={userData?.body_description} type="yes" onChange={(value) => handleInputChange(6, value)} />
+                  <DetailBox dataTitle={"Diet Description"} dataValue={userData?.diet_description} type="yes" onChange={(value) => handleInputChange(7, value)} />
+                  {userData?.user_type !== 'Athlete' && (
+                    <DetailBox dataTitle={"Bio"} dataValue={"Stay Fit\nStay Fit\nStay Fit"} type="yes" onChange={(value) => handleInputChange(8, value)} />
+                  )}
                 </Box>
               </Box>
 
@@ -463,7 +481,7 @@ export default function ProfileCard() {
               sx={{
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "space-evenly", 
+                justifyContent: "space-evenly",
                 width: "100%"
               }}
             >

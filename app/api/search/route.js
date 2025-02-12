@@ -50,9 +50,9 @@ export const config = {
 // }
 
 
-export async function POST(requestt){
+export async function POST(request){
     console.log("Here")
-    const { searchTerm, type } = await requestt.json();
+    const { searchTerm, type } = await request.json();
     if (!searchTerm) {
       return new Response(JSON.stringify({ error: "Search term is required" }), {
         status: 400,

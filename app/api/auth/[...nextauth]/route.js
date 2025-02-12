@@ -23,7 +23,9 @@ const authOptions = {
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: "jwt", // Make sure session is JWT-based
+    maxAge: 30 * 60, // Set session expiration time (e.g., 30 minutes)
+    updateAge: 15 * 60, // Refresh session every 15 minutes
   },
   callbacks: {
     async jwt({ token, user }) {

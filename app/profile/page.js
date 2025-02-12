@@ -26,7 +26,7 @@ const ProfilePage = () => {
 
   return (
     <Layout pathname={"/profile"}> {/* Pass the correct pathname */}
-      <ProfileCard /> {/* The Post component will be rendered inside the layout */}
+      <ProfileCard user1={session.user.email} user2={session.user.email} /> {/* The Post component will be rendered inside the layout */}
     </Layout>
   );
 };
