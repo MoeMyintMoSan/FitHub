@@ -12,9 +12,61 @@ import {
 } from "@mui/material";
 import Input from "@mui/joy/Input";
 import CloseIcon from "@mui/icons-material/Close";
-import SendIcon from '@mui/icons-material/Send';
+import SendIcon from "@mui/icons-material/Send";
 
-export default function Comment({ onClose }) {
+export default function Comment({ postId, userId, onClose }) {
+  const [comments, setComments] = React.useState([]);
+  const [newComment, setNewComment] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+
+  // Fetch comments for the post
+  React.useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const res = await fetch(`/api/comments?post_id=${postId}`);
+        if (!res.ok) throw new Error("Failed to fetch comments");
+        const data = await res.json();
+        setComments(data);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    };
+
+    fetchComments();
+  }, [postId]);
+
+  // Handle submitting a new comment
+  const handleSubmit = async () => {
+    if (!newComment.trim()) return;
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: userId,
+          post_id: postId,
+          content: newComment,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to post comment");
+      const data = await res.json();
+
+      // Update state with new comment
+      setComments((prev) => [
+        ...prev,
+        { ...data.comment, username: "You" }, // Temporary until next fetch
+      ]);
+      setNewComment(""); // Clear input
+    } catch (error) {
+      console.error("Error posting comment:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Dialog
       open={true}
@@ -44,46 +96,37 @@ export default function Comment({ onClose }) {
 
       {/* Comment Section */}
       <DialogContent sx={{ flex: 1, overflowY: "auto" }}>
-          <Box m={1} sx={{bgcolor: "#283138",p: 1, borderRadius: 2,}}>
-            <Typography variant="body2" color="white">
-              <strong>User1:</strong> This is a great post!
-            </Typography>
-          </Box>
-          <Box m={1} sx={{bgcolor: "#283138",p: 1, borderRadius: 2,}}>
-          <Typography variant="body2" color="white">
-              <strong>kali_123: </strong> Your dedication is seriously inspiring! 🔥 Fitness isn’t just about looking good—it’s about feeling strong, confident, and unstoppable. Keep pushing your limits!
-            </Typography>
-          </Box>
-          <Box m={1} sx={{bgcolor: "#283138",p: 1, borderRadius: 2,}}>
-          <Typography variant="body2" color="white">
-              <strong>potter_lol: </strong> This is the kind of motivation I needed today! Consistency and discipline make all the difference. Keep crushing those goals! 💪👏
-            </Typography>
-          </Box>
-          <Box m={1} sx={{bgcolor: "#283138",p: 1, borderRadius: 2,}}>
-          <Typography variant="body2" color="white">
-              <strong>moesan_lol: </strong> Incredible progress! Fitness is a journey, and you’re proving that hard work and persistence pay off. Keep going strong! 🚀
-            </Typography>
-          </Box>
-          <Box m={1} sx={{bgcolor: "#283138",p: 1, borderRadius: 2,}}>
-          <Typography variant="body2" color="white">
-              <strong>noenoe_lol: </strong> The energy and effort you put in are next-level! Fitness isn’t just about the results, but the process—and you’re making it look effortless! 🔥💯
-            </Typography>
-          </Box>
+        {comments.length > 0 ? (
+          comments.map((comment) => (
+            <Box key={comment.comment_id} m={1} sx={{ bgcolor: "#283138", p: 1, borderRadius: 2 }}>
+              <Typography variant="body2" color="white">
+                <strong>{comment.user_name}:</strong> {comment.content}
+              </Typography>
+            </Box>
+          ))
+        ) : (
+          <Typography color="gray" align="center">
+            No comments yet. Be the first to comment!
+          </Typography>
+        )}
       </DialogContent>
 
-      {/* Input Field Sticking to Bottom */}
+      {/* Input Field */}
       <DialogActions sx={{ px: 2, pb: 2 }}>
         <Input
           placeholder="Add a comment..."
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
           sx={{
             bgcolor: "#1E252B",
             color: "white",
             borderRadius: 10,
-            float: "left",
             width: "100%",
           }}
         />
-        <IconButton><SendIcon sx={{color: "#ED6262"}}/></IconButton>
+        <IconButton onClick={handleSubmit} disabled={loading}>
+          <SendIcon sx={{ color: loading ? "gray" : "#ED6262" }} />
+        </IconButton>
       </DialogActions>
     </Dialog>
   );
