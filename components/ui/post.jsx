@@ -129,7 +129,7 @@ export default function Post({ post_id }) {
               <MoreVertIcon />
             </IconButton>
           }
-          title={post.title}
+          title={post.user_name}
           subheader={post.created_date}
           sx={{ color: blueGrey[50] }}
           subheaderTypographyProps={{ sx: { color: blueGrey[200] } }}
