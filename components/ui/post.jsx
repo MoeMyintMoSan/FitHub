@@ -73,6 +73,19 @@ export default function Post({ post_id }) {
     fetchPost();
   }, [post_id]);
 
+
+  const handleExpandClick = () => setExpanded(!expanded);
+  const toggleComment = () => setShowComment((prev) => !prev);
+
+  const handleCardHeaderClick = () => {
+    if (post && post.professional_id) {
+      router.push({
+        pathname: "/profile",
+        query: { professional_id: post.professional_id },
+      });
+    }
+  };
+
   if (loading) {
     return (
       <Box
@@ -101,9 +114,6 @@ export default function Post({ post_id }) {
     );
   }
 
-  const handleExpandClick = () => setExpanded(!expanded);
-  const toggleComment = () => setShowComment((prev) => !prev);
-
   return (
     <Box display="flex" justifyContent="center" alignItems="center">
       <Card
@@ -120,7 +130,7 @@ export default function Post({ post_id }) {
       >
         <CardHeader
           avatar={
-            <Avatar sx={{ bgcolor: red[500] }}>
+            <Avatar sx={{ bgcolor: blueGrey[500] }}>
               {post.user_name.charAt(0).toUpperCase()}
             </Avatar>
           }
@@ -131,8 +141,9 @@ export default function Post({ post_id }) {
           }
           title={post.title}
           subheader={post.created_date}
-          sx={{ color: blueGrey[50] }}
+          sx={{ color: blueGrey[50], cursor: "pointer" }} // Add cursor pointer
           subheaderTypographyProps={{ sx: { color: blueGrey[200] } }}
+          onClick={handleCardHeaderClick} // Add onClick handler
         />
 
         <Grid container>

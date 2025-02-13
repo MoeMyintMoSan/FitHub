@@ -5,7 +5,7 @@ import { useSession, signIn } from "next-auth/react"; // Import session and sign
 import { useRouter } from "next/navigation";
 import Post from "@/components/ui/post";
 import CreatePost from "@/components/ui/createPost"; // Import the Post component
-
+//Reon was here
 const HomePage = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -26,7 +26,7 @@ const HomePage = () => {
   return (
     <Layout pathname={"/home"}>
       {/* Wrap the homepage content inside the Layout */}
-      <Post post_id={3}/>
+      <Post post_id={7}/>
       <br />
       <div style={{ position: "fixed", bottom: "20px", right: "20px" }}>
         <CreatePost type="nutritionist" />
