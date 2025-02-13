@@ -139,7 +139,7 @@ export default function Post({ post_id }) {
               <MoreVertIcon />
             </IconButton>
           }
-          title={post.title}
+          title={post.user_name}
           subheader={post.created_date}
           sx={{ color: blueGrey[50], cursor: "pointer" }} // Add cursor pointer
           subheaderTypographyProps={{ sx: { color: blueGrey[200] } }}

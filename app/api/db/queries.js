@@ -8,7 +8,6 @@ export async function searchUsers(searchTerm) {
     const response = await sql`
       SELECT * 
       FROM users u
-      JOIN professional p ON u.user_id = p.user_id
       WHERE LOWER(u.user_name) LIKE ${"%" + searchTerm.toLowerCase() + "%"}
     `;
     return response

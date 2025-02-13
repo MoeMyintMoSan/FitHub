@@ -16,8 +16,7 @@ export async function GET(request, { params }) {
         nutritionist_post_details.food,
         nutritionist_post_details.calories
       FROM post
-      JOIN professional ON post.professional_id = professional.professional_id
-      JOIN users ON professional.user_id = users.user_id
+      JOIN users ON post.professional_id = users.user_id
       LEFT JOIN trainer_post_details 
           ON post.content_type = 'Trainer' AND post.post_id = trainer_post_details.post_id
       LEFT JOIN nutritionist_post_details 
