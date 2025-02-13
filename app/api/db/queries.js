@@ -5,14 +5,6 @@ export async function searchUsers(searchTerm) {
 
     console.log("searchTerm",sql)
   try {
-    // console.log("searchTerm",searchTerm)
-    // const result = await sql`
-    //   SELECT *
-    //   FROM User 
-    //   WHERE LOWER(user_name) LIKE ${"%" + searchTerm.toLowerCase() + "%"}
-    // `;
-    // console.log("result",result)
-    // return result;
     const response = await sql`
       SELECT * 
       FROM users u

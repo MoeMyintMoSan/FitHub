@@ -5,7 +5,7 @@ import { useSession, signIn } from "next-auth/react"; // Import session and sign
 import { useRouter } from "next/navigation";
 import Post from "@/components/ui/post";
 import CreatePost from "@/components/ui/createPost"; // Import the Post component
-
+//Reon was here
 const HomePage = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
