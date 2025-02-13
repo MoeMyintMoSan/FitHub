@@ -26,8 +26,11 @@ const HomePage = () => {
   return (
     <Layout pathname={"/home"}>
       {/* Wrap the homepage content inside the Layout */}
-      <Post post_id={3}/>
+      <Post post_id={7}/>
       <br />
+      <Post post_id={8}/>
+      <br />
+      <Post post_id={9}/>
       <div style={{ position: "fixed", bottom: "20px", right: "20px" }}>
         <CreatePost type="nutritionist" />
         {/* The Post component will be rendered inside the layout */}
