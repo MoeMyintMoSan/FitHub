@@ -38,7 +38,7 @@ export default function Post({ post_id }) {
   const [expanded, setExpanded] = React.useState(false);
   const [showComment, setShowComment] = React.useState(false);
   const [listGroups, setListGroups] = React.useState([]);
-
+  console.log("post_id", post_id);
   React.useEffect(() => {
     async function fetchPost() {
       try {
@@ -63,6 +63,7 @@ export default function Post({ post_id }) {
 
         setListGroups(groups);
       } catch (error) {
+        console.log('postid',post_id)
         console.error("Error fetching post:", error);
       } finally {
         setLoading(false);

@@ -38,6 +38,7 @@ const SearchPage = () => {
 
     fetchResults();
   }, [searchTerm, tab]);
+  console.log("results", results);
 
   return (
     <Layout pathname={"/search"}>
@@ -121,12 +122,14 @@ const SearchPage = () => {
               {results.map((post) => (
                 <Grid item xs={12} key={post.post_id}>
                   <Post
-                    type={post.content_type}
-                    title={post.title}
-                    subheader={post.created_date}
-                    image={post.image}
-                    mainContent={post.content}
-                    likeCount={post.like_count}
+
+                    post_id={post.post_id}
+                    // type={post.content_type}
+                    // title={post.title}
+                    // subheader={post.created_date}
+                    // image={post.image}
+                    // mainContent={post.content}
+                    // likeCount={post.like_count}
                   />
                 </Grid>
               ))}

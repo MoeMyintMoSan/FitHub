@@ -30,7 +30,7 @@ export async function searchUsers(searchTerm) {
 export async function searchPosts(searchTerm) {
   try {
     const response = await sql`
-      SELECT *
+      SELECT post_id
       from post 
       WHERE LOWER(content) LIKE ${"%" + searchTerm.toLowerCase() + "%"}
         AND post_visibility = 'Public'
