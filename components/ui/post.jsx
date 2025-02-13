@@ -18,6 +18,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { Box, Grid, CircularProgress } from "@mui/material";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation"; // Updated import
 
 const Comment = dynamic(() => import("./comment"), { ssr: false });
 
@@ -38,7 +39,8 @@ export default function Post({ post_id }) {
   const [expanded, setExpanded] = React.useState(false);
   const [showComment, setShowComment] = React.useState(false);
   const [listGroups, setListGroups] = React.useState([]);
-  console.log("post_id", post_id);
+  const router = useRouter();
+
   React.useEffect(() => {
     async function fetchPost() {
       try {
@@ -63,7 +65,6 @@ export default function Post({ post_id }) {
 
         setListGroups(groups);
       } catch (error) {
-        console.log('postid',post_id)
         console.error("Error fetching post:", error);
       } finally {
         setLoading(false);
@@ -73,16 +74,12 @@ export default function Post({ post_id }) {
     fetchPost();
   }, [post_id]);
 
-
   const handleExpandClick = () => setExpanded(!expanded);
   const toggleComment = () => setShowComment((prev) => !prev);
 
   const handleCardHeaderClick = () => {
     if (post && post.professional_id) {
-      router.push({
-        pathname: "/profile",
-        query: { professional_id: post.professional_id },
-      });
+      router.push(`/profile?professional_id=${post.professional_id}`);
     }
   };
 
