@@ -18,6 +18,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { Box, Grid, CircularProgress } from "@mui/material";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation"; // Updated import
 
 const Comment = dynamic(() => import("./comment"), { ssr: false });
 
@@ -38,7 +39,8 @@ export default function Post({ post_id, email }) {
   const [expanded, setExpanded] = React.useState(false);
   const [showComment, setShowComment] = React.useState(false);
   const [listGroups, setListGroups] = React.useState([]);
-  console.log("post_id", post_id);
+  const router = useRouter();
+
   React.useEffect(() => {
     async function fetchPost() {
       try {
@@ -63,7 +65,6 @@ export default function Post({ post_id, email }) {
 
         setListGroups(groups);
       } catch (error) {
-        console.log('postid',post_id)
         console.error("Error fetching post:", error);
       } finally {
         setLoading(false);
@@ -72,6 +73,15 @@ export default function Post({ post_id, email }) {
 
     fetchPost();
   }, [post_id]);
+
+  const handleExpandClick = () => setExpanded(!expanded);
+  const toggleComment = () => setShowComment((prev) => !prev);
+
+  const handleCardHeaderClick = () => {
+    if (post && post.professional_id) {
+      router.push(`/profile?professional_id=${post.professional_id}`);
+    }
+  };
 
   if (loading) {
     return (
@@ -101,9 +111,6 @@ export default function Post({ post_id, email }) {
     );
   }
 
-  const handleExpandClick = () => setExpanded(!expanded);
-  const toggleComment = () => setShowComment((prev) => !prev);
-
   return (
     <Box display="flex" justifyContent="center" alignItems="center">
       <Card
@@ -120,7 +127,7 @@ export default function Post({ post_id, email }) {
       >
         <CardHeader
           avatar={
-            <Avatar sx={{ bgcolor: red[500] }}>
+            <Avatar sx={{ bgcolor: blueGrey[500] }}>
               {post.user_name.charAt(0).toUpperCase()}
             </Avatar>
           }
@@ -131,8 +138,9 @@ export default function Post({ post_id, email }) {
           }
           title={post.user_name}
           subheader={post.created_date}
-          sx={{ color: blueGrey[50] }}
+          sx={{ color: blueGrey[50], cursor: "pointer" }} // Add cursor pointer
           subheaderTypographyProps={{ sx: { color: blueGrey[200] } }}
+          onClick={handleCardHeaderClick} // Add onClick handler
         />
 
         <Grid container>
