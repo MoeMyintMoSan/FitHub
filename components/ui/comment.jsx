@@ -14,7 +14,7 @@ import Input from "@mui/joy/Input";
 import CloseIcon from "@mui/icons-material/Close";
 import SendIcon from "@mui/icons-material/Send";
 
-export default function Comment({ postId, userId, onClose }) {
+export default function Comment({ postId, email, onClose }) {
   const [comments, setComments] = React.useState([]);
   const [newComment, setNewComment] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -45,7 +45,7 @@ export default function Comment({ postId, userId, onClose }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: userId,
+          email: email,
           post_id: postId,
           content: newComment,
         }),
@@ -57,7 +57,7 @@ export default function Comment({ postId, userId, onClose }) {
       // Update state with new comment
       setComments((prev) => [
         ...prev,
-        { ...data.comment, username: "You" }, // Temporary until next fetch
+        { ...data.comment, username: "You"}, // Temporary until next fetch
       ]);
       setNewComment(""); // Clear input
     } catch (error) {

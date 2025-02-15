@@ -9,7 +9,7 @@ import CreatePost from "@/components/ui/createPost"; // Import the Post componen
 const HomePage = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
-  
+  const email = session?.user?.email;
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/"); // Redirect to sign-in if not authenticated
@@ -26,11 +26,11 @@ const HomePage = () => {
   return (
     <Layout pathname={"/home"}>
       {/* Wrap the homepage content inside the Layout */}
-      <Post post_id={7}/>
+      <Post post_id={7} email={email}/>
       <br />
-      <Post post_id={8}/>
+      <Post post_id={8} email={email}/>
       <br />
-      <Post post_id={9}/>
+      <Post post_id={9} email={email}/>
       <div style={{ position: "fixed", bottom: "20px", right: "20px" }}>
         <CreatePost type="nutritionist" />
         {/* The Post component will be rendered inside the layout */}

@@ -32,7 +32,7 @@ const ExpandMore = styled((props) => {
   transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
 }));
 
-export default function Post({ post_id }) {
+export default function Post({ post_id, email }) {
   const [post, setPost] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [expanded, setExpanded] = React.useState(false);
@@ -216,7 +216,7 @@ export default function Post({ post_id }) {
           </CardContent>
         </Collapse>
       </Card>
-      {showComment && <Comment postId={post.post_id} onClose={toggleComment} />}
+      {showComment && <Comment postId={post.post_id} email={email} onClose={toggleComment} />}
     </Box>
   );
 }

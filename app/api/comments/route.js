@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import sql from "@/app/api/db/config";
-
+import { findUserByEmail } from "../db/queries";
 // GET Comments for a specific post
 export async function GET(req) {
   try {
@@ -29,11 +29,14 @@ export async function GET(req) {
 // POST - Add a new comment
 export async function POST(req) {
   try {
-    const { user_id, post_id, content } = await req.json();
+    const { email, post_id, content } = await req.json();
 
-    if (!user_id || !post_id || !content) {
+    if (!email || !post_id || !content) {
       return NextResponse.json({ message: "All fields are required" }, { status: 400 });
     }
+
+    const user = await findUserByEmail(email);
+    const user_id = user.user_id;
 
     const result = await sql`
       INSERT INTO "Comment" (user_id, post_id, content)
@@ -41,6 +44,9 @@ export async function POST(req) {
       RETURNING comment_id, content, post_id, user_id;
     `;
 
+    const comment = result[0];
+    comment.user_name = user.user_name
+    
     return NextResponse.json({ message: "Comment added", comment: result[0] }, { status: 201 });
   } catch (error) {
     console.error("Error adding comment:", error);
