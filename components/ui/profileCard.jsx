@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { CardContent, CssBaseline, GlobalStyles } from "@mui/material";
-import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import IconButton from "@mui/material/IconButton";
@@ -15,13 +14,11 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import CustomButton from "./profileButtons";
 import CusBox from "./cusBox";
-import DetailBox from '../detailBox';
+import DetailBox from './detailBox';
 import Post from "./post";
 
 export default function ProfileCard({ user1, user2 }) {
-  const [userData, setUserData] = useState(null);
-  const [originalUserData, setOriginalUserData] = useState(null);
-  
+
   const [showButtonBP, setShowButtonBP] = useState(false);
   const [showButtonD, setShowButtonD] = useState(false);
   const [showButtonP, setShowButtonP] = useState(false);
@@ -29,11 +26,16 @@ export default function ProfileCard({ user1, user2 }) {
   const [showButtonL, setShowButtonL] = useState(false);
   const [showCheckMark, setShowCheckMark] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  
+
   const [hasChanges, setHasChanges] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
+  const [userData, setUserData] = useState(null);
+  const [originalUserData, setOriginalUserData] = useState(null);
+  const [proData, setProData] = useState(null);
+
   const self = user1 === user2;
+  const proDataFetched = useRef(false);
 
   useEffect(() => {
     fetch(`/api/users?email=${encodeURIComponent(user2)}`, {
@@ -47,80 +49,99 @@ export default function ProfileCard({ user1, user2 }) {
         setOriginalUserData(data);  // Store original data in state
       })
       .catch(error => console.error("Error fetching user:", error));
+  }, [user2]);
 
+  useEffect(() => {
+    if (self && userData?.user_type !== 'Athlete' && userData?.user_id && !proDataFetched.current) {
+      fetch(`/api/users/professionals/bio?user_id=${encodeURIComponent(userData?.user_id)}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log("Fetched professional bio:", data);
+          setUserData((prev) => ({ ...prev, ...data }));  // Add data to user data
+          setOriginalUserData((prev) => ({ ...prev, ...data }));  // Add data to original user data
+        })
+        .catch(error => console.error("Error fetching professional bio:", error));
+      fetch(`/api/users/professionals/data?user_id=${encodeURIComponent(userData?.user_id)}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log("Fetched professional data:", data);
+          setProData(data);  // Store fetched data in state
+        })
+        .catch(error => console.error("Error fetching professional data:", error));
+      proDataFetched.current = true; // Prevent duplicate fetch
+    }
+  }, [userData, self]);
+
+  useEffect(() => {
     if (self) {
-      setShowButtonBP(true);
-      setShowButtonD(false);
-      setShowButtonP(false);
-      setShowButtonR(false);
-      setShowButtonL(false);
-      setShowCheckMark(false);
       setShowDetails(true);
+      if (userData?.user_type === 'Athlete') {
+        setShowButtonBP(true);
+        setShowButtonD(false);
+        setShowButtonP(false);
+        setShowButtonR(false);
+        setShowButtonL(false);
+        setShowCheckMark(false);
+      } else {
+        setShowButtonBP(false);
+        setShowButtonP(true);
+        setShowButtonD(false);
+        setShowButtonR(false);
+        setShowButtonL(false);
+        if (proData?.likePro?.count > 10) { // used 10 instead of 200 for testing purposes
+          setShowCheckMark(true);
+        } else {
+          setShowCheckMark(false);
+        }
+      }
     }
-  }, [user1, user2]);
-  
-  async function checkCondition(user1, user2) {
-    if (user1 === user2) {
-      setShowButtonBP(true);
-      setShowButtonD(false);
-      setShowButtonP(false);
-      setShowButtonR(false);
-      setShowButtonL(false);
-      setShowCheckMark(false);
-      setShowDetails(true);
-    } else {
-      //     const userType = "ath_to_ath";
-      // const initialStates = user1 === user2
-      // ? {
-      //     showButtonBP: false,
-      //     showButtonD: true,
-      //     showButtonP: false,
-      //     showButtonR: false,
-      //     showButtonL: false,
-      //     showCheckMark: true,
-      //     showDetails: false
-      //   }
-      // : userType === "ath_own"
-      // ? {
-      //     showButtonBP: true,
-      //     showButtonD: false,
-      //     showButtonP: false,
-      //     showButtonR: false,
-      //     showButtonL: false,
-      //     showCheckMark: false,
-      //     showDetails: true
-      //   }
-      //   : userType === "pro_other"
-      // ? {
-      //     showButtonBP: false,
-      //     showButtonD: false,
-      //     showButtonP: true,
-      //     showButtonR: false,
-      //     showButtonL: false,
-      //     showCheckMark: false,
-      //     showDetails: true
-      //   }
-      // : userType === "ath_to_ath"
-      // ? {
-      //     showButtonBP: false,
-      //     showButtonD: false,
-      //     showButtonP: false,
-      //     showButtonR: false,
-      //     showButtonL: false,
-      //     showCheckMark: false,
-      //     showDetails: true
-      //   }
-      // : {//ath to pro
-      //     showButtonBP: false,
-      //     showButtonD: true,
-      //     showButtonP: false,
-      //     showButtonR: true,
-      //     showButtonL: true,
-      //     showCheckMark: false,
-      //     showDetails: false
-      //   };
-    }
-  }
+  }, [userData, self]);
+  //     const userType = "ath_to_ath";
+  // const initialStates = user1 === user2
+  // ? {
+  //     showButtonBP: false,
+  //     showButtonD: true,
+  //     showButtonP: false,
+  //     showButtonR: false,
+  //     showButtonL: false,
+  //     showCheckMark: true,
+  //     showDetails: false
+  //   }
+  //   : userType === "pro_other"
+  // ? {
+  //     showButtonBP: false,
+  //     showButtonD: false,
+  //     showButtonP: true,
+  //     showButtonR: false,
+  //     showButtonL: false,
+  //     showCheckMark: false,
+  //     showDetails: true
+  //   }
+  // : userType === "ath_to_ath"
+  // ? {
+  //     showButtonBP: false,
+  //     showButtonD: false,
+  //     showButtonP: false,
+  //     showButtonR: false,
+  //     showButtonL: false,
+  //     showCheckMark: false,
+  //     showDetails: true
+  //   }
+  // : {//ath to pro
+  //     showButtonBP: false,
+  //     showButtonD: true,
+  //     showButtonP: false,
+  //     showButtonR: true,
+  //     showButtonL: true,
+  //     showCheckMark: false,
+  //     showDetails: false
+  //   };
 
   const handleInputChange = (field, value) => {
     setUserData((prev) => {
@@ -134,9 +155,6 @@ export default function ProfileCard({ user1, user2 }) {
           break;
         case 3:
           updatedData.height = value;
-          break;
-        case 4:
-          updatedData.date_of_birth = value;
           break;
         case 5:
           updatedData.user_password = value;
@@ -153,17 +171,33 @@ export default function ProfileCard({ user1, user2 }) {
         default:
           break;
       }
-          // Compare updated data with original
-    const hasChanged = JSON.stringify(updatedData) !== JSON.stringify(originalUserData);
-    setHasChanges(hasChanged);
-    
-    return updatedData;
+      // Compare updated data with original
+      const hasChanged = JSON.stringify(updatedData) !== JSON.stringify(originalUserData);
+      setHasChanges(hasChanged);
+
+      return updatedData;
     });
   };
 
   const saveChanges = () => {
-    console.log("Changes saved:", fields);
-    setHasChanges(false);
+    fetch(`/api/users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          console.log("Changes saved:", data);
+          setOriginalUserData(userData);  // Update original data
+          setHasChanges(false);
+        } else {
+          console.error("Error saving changes:", data.error);
+        }
+      })
+      .catch(error => console.error("Error saving changes:", error));
   };
 
   const toggleDetailsAndPage = () => {
@@ -175,25 +209,38 @@ export default function ProfileCard({ user1, user2 }) {
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
 
+  const handleSpecialitySelect = (speciality) => {
+    console.log("Selected Speciality:", speciality);
+    fetch(`/api/users/professionals`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ user_id: userData?.user_id, user_type: speciality }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          console.log("Success:", data);
+          window.location.reload();
+        } else {
+          console.error("Error updating speciality:", data.error);
+        }
+      })
+      .catch(error => console.error("Error updating speciality:", error));
+    handleCloseModal();
+  };
+
   const formatDate = (utcDate) => {
     if (!utcDate) return "";  // Handle null values safely
     const date = new Date(utcDate);
     return date.toISOString().split("T")[0]; // Extract only YYYY-MM-DD
-  };  
+  };
 
   return (
     <React.Fragment>
       <CssBaseline />
-      <GlobalStyles
-        styles={{
-          "html, body": {
-            margin: 0,
-            padding: 0,
-            width: "100%",
-            height: "100%"
-          },
-        }}
-      />
+      <GlobalStyles styles={{ "html, body": { margin: 0, padding: 0, width: "100%", height: "100%" } }} />
       <Box display="flex" justifyContent="center" alignItems="center">
         <Card
           sx={{
@@ -297,7 +344,7 @@ export default function ProfileCard({ user1, user2 }) {
                         color: "#FF9999",
                       }}
                     >
-                      Trainer
+                      {userData?.user_type}
                     </Typography>
                     <Typography
                       sx={{
@@ -306,7 +353,7 @@ export default function ProfileCard({ user1, user2 }) {
                         whiteSpace: "pre-line"
                       }}
                     >
-                      Just started my trainer journey. Let's get fit together!
+                      {userData?.bio}
                     </Typography>
                   </div>
                 )}
@@ -335,7 +382,7 @@ export default function ProfileCard({ user1, user2 }) {
                   <DetailBox dataTitle="Display Name" dataValue={userData?.user_name} onChange={(value) => handleInputChange(1, value)} />
                   <DetailBox dataTitle="Weight" dataValue={userData?.weight} onChange={(value) => handleInputChange(2, value)} />
                   <DetailBox dataTitle="Height" dataValue={userData?.height} onChange={(value) => handleInputChange(3, value)} />
-                  <DetailBox dataTitle="Date Of Birth" dataValue={formatDate(userData?.date_of_birth)} disable={true}/>
+                  <DetailBox dataTitle="Date Of Birth" dataValue={formatDate(userData?.date_of_birth)} disable={true} />
                   {self && (<DetailBox dataTitle="Password" dataValue={userData?.user_password} onChange={(value) => handleInputChange(5, value)} />)}
                 </Box>
 
@@ -350,7 +397,7 @@ export default function ProfileCard({ user1, user2 }) {
                   <DetailBox dataTitle={"Body Description"} dataValue={userData?.body_description} type="yes" onChange={(value) => handleInputChange(6, value)} />
                   <DetailBox dataTitle={"Diet Description"} dataValue={userData?.diet_description} type="yes" onChange={(value) => handleInputChange(7, value)} />
                   {userData?.user_type !== 'Athlete' && (
-                    <DetailBox dataTitle={"Bio"} dataValue={"Stay Fit\nStay Fit\nStay Fit"} type="yes" onChange={(value) => handleInputChange(8, value)} />
+                    <DetailBox dataTitle={"Bio"} dataValue={userData?.bio} type="yes" onChange={(value) => handleInputChange(8, value)} />
                   )}
                 </Box>
               </Box>
@@ -402,9 +449,9 @@ export default function ProfileCard({ user1, user2 }) {
                     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.25)" // Add shadow effect
                   }}
                 >
-                  <CusBox test1={"Posts"} test2={"2"} type={1}></CusBox>
-                  <CusBox test1={"Registered"} test2={"1/10"} type={1}></CusBox>
-                  <CusBox test1={"Likes"} test2={"1"} type={1}></CusBox>
+                  <CusBox test1={"Posts"} test2={proData?.posts?.count} type={1}></CusBox>
+                  <CusBox test1={"Registered"} test2={proData?.registered?.count + " / 10"} type={1}></CusBox>
+                  <CusBox test1={"Likes"} test2={proData?.likePro?.count} type={1}></CusBox>
                 </Box>
                 <Typography>
                   Posts
@@ -485,8 +532,8 @@ export default function ProfileCard({ user1, user2 }) {
                 width: "100%"
               }}
             >
-              <CusBox test1={"/img/image_5.png"} test2={"TRAINER"} type={3} obj={handleCloseModal}></CusBox>
-              <CusBox test1={"/img/image_6.png"} test2={"NUTRITIONIST"} type={3} obj={handleCloseModal}></CusBox>
+              <CusBox test1={"/img/image_5.png"} test2={'Trainer'} type={3} onSelect={handleSpecialitySelect}></CusBox>
+              <CusBox test1={"/img/image_6.png"} test2={'Nutritionist'} type={3} onSelect={handleSpecialitySelect}></CusBox>
             </Box>
           </Box>
         </Box>

@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import CustomButton from './profileButtons';
 
 
-const CusBox = ({ test1, test2, type, obj }) => {
+const CusBox = ({ test1, test2, type, obj, onSelect }) => {
     if (type === 1) {
         return (
             <Box
@@ -60,7 +60,7 @@ const CusBox = ({ test1, test2, type, obj }) => {
                 <Typography>
                     {test2}
                 </Typography>
-                <CustomButton type={2} onClick={() => { obj(); console.log("Speciality selected!"); }}>
+                <CustomButton type={2} onClick={() => { onSelect(test2); console.log("Speciality selected!",test2); }}>
                     SELECT
                 </CustomButton>
             </Box>
