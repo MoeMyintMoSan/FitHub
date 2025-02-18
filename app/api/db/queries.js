@@ -2,15 +2,14 @@ import sql from "../db/config";
 
 // Search Users by Name
 export async function searchUsers(searchTerm) {
-
-    console.log("searchTerm",sql)
+  console.log("searchTerm", sql);
   try {
     const response = await sql`
       SELECT * 
       FROM users u
       WHERE LOWER(u.user_name) LIKE ${"%" + searchTerm.toLowerCase() + "%"}
     `;
-    return response
+    return response;
   } catch (error) {
     console.error("Error fetching users:", error);
     return [];
@@ -126,7 +125,7 @@ export async function fetchAccountsByUserType(userId) {
     console.error("Error fetching accounts:", error);
     throw error;
   }
-} 
+}
 
 
 
