@@ -21,8 +21,8 @@ export async function searchPosts(searchTerm) {
   try {
     const response = await sql`
       SELECT post_id
-      FROM post 
-      WHERE LOWER(content) LIKE ${"%" + searchTerm.toLowerCase() + "%"}
+      from post 
+      WHERE LOWER(title) LIKE ${"%" + searchTerm.toLowerCase() + "%"}
         AND post_visibility = 'Public'
     `;
     return response;
@@ -127,20 +127,8 @@ export async function fetchAccountsByUserType(userId) {
   }
 }
 
-// Query to find a professional bio by user_id
-export async function findBioById(id) {
-  try {
-    const bio = await sql`
-      SELECT bio 
-      FROM professional 
-      WHERE professional_id = ${id}
-    `;
-    return bio.length > 0 ? bio[0] : null;
-  } catch (error) {
-    console.error("Error finding professional bio by user_id:", error);
-    throw error;
-  }
-}
+
+
 
 // Query to find a professional's post count by user_id
 export async function postCountsById(id) {
@@ -238,6 +226,20 @@ export async function updateToProfessionalById(id, type) {
     return updatedUser.length > 0 ? updatedUser[0] : null;
   } catch (error) {
     console.error("Error updating user to professional by user_id:", error);
+    throw error;
+  }
+}
+// Query to find a professional bio by user_id
+export async function findBioById(id) {
+  try {
+    const bio = await sql`
+      SELECT bio 
+      FROM professional 
+      WHERE professional_id = ${id}
+    `;
+    return bio.length > 0 ? bio[0] : null;
+  } catch (error) {
+    console.error("Error finding professional bio by user_id:", error);
     throw error;
   }
 }

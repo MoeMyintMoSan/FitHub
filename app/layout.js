@@ -1,7 +1,7 @@
 import localFont from "next/font/local";
-import SessionProviderWrapper from "@/components/ui/SessionProviderWrapper"; // Import the wrapper
+import SessionProviderWrapper from "../components/ui/SessionProviderWrapper";
 import "./globals.css";
-
+import "@uploadthing/react/styles.css";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
