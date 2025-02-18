@@ -18,12 +18,17 @@ import FormHelperText from "@mui/material/FormHelperText";
 import Grid from "@mui/material/Grid";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
+import { UploadButton } from "./uploadthing";
 
-export default function FormDialog({ type }) {
+export default function FormDialog({ type, email }) {
   const [open, setOpen] = React.useState(false);
+  const [title, setTitle] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [image, setImage] = React.useState(null);
+  const [imageName, setImageName] = React.useState(""); // Track the uploaded file name
   const [fields, setFields] = React.useState([
-    type === "trainer"
+    type === "Trainer"
       ? { exercise: "", reps: "", sets: "" }
       : { food: "", calories: "" },
   ]);
@@ -34,6 +39,8 @@ export default function FormDialog({ type }) {
 
   const handleClose = () => {
     setOpen(false);
+    setImage(null); // Reset the image state
+    setImageName(""); // Reset the image name
   };
 
   const handleAddField = () => {
@@ -49,6 +56,59 @@ export default function FormDialog({ type }) {
     const newFields = [...fields];
     newFields[index][field] = value;
     setFields(newFields);
+  };
+
+  const handleImageChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      // Upload the file using UploadThing
+      const uploadRes = await fetch("/api/uploadthing", {
+        method: "POST",
+        body: file,
+      });
+
+      if (!uploadRes.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      const { url } = await uploadRes.json(); // Get the uploaded file URL
+      setImage(url); // Store the image URL
+      setImageName(file.name); // Update the UI with the file name
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      setImage(null);
+      setImageName("");
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("title", title);
+    formData.append("content", description);
+    formData.append("post_visibility", "Public"); // or "Private" based on user choice
+    formData.append("image", image);
+    formData.append("details", JSON.stringify(fields));
+
+    try {
+      const response = await fetch("/api/posts", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        console.log("Post created successfully");
+        handleClose();
+      } else {
+        console.error("Failed to create post");
+      }
+    } catch (error) {
+      console.error("Error creating post:", error);
+    }
   };
 
   const VisuallyHiddenInput = styled("input")({
@@ -84,11 +144,7 @@ export default function FormDialog({ type }) {
         onClose={handleClose}
         PaperProps={{
           component: "form",
-          onSubmit: (event) => {
-            event.preventDefault();
-            console.log(fields);
-            handleClose();
-          },
+          onSubmit: handleSubmit,
           sx: {
             borderRadius: 5,
             backgroundColor: "#363C40",
@@ -111,7 +167,7 @@ export default function FormDialog({ type }) {
           </Button>
           <Box
             sx={{
-              ml: 8
+              ml: 8,
             }}
           >
             <DialogTitle color="white">Create a new Post</DialogTitle>
@@ -123,6 +179,8 @@ export default function FormDialog({ type }) {
               fullWidth
               label="Title"
               id="fullWidth"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               InputLabelProps={{
                 style: { color: "white", opacity: "60%" },
               }}
@@ -141,6 +199,8 @@ export default function FormDialog({ type }) {
               fullWidth
               label="Description"
               id="fullWidth"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               InputLabelProps={{
                 style: { color: "white", opacity: "60%" },
               }}
@@ -154,6 +214,18 @@ export default function FormDialog({ type }) {
             />
           </Box>
           <Box sx={{ width: 500, maxWidth: "100%" }}>
+            <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={(res) => {
+                setImage(res[0].url);
+                console.log("Files: ", res);
+                alert("Upload Completed");
+              }}
+              onUploadError={(error) => {
+                // Do something with the error.
+                alert(`ERROR! ${error.message}`);
+              }}
+            />
             <Button
               fullWidth
               component="label"
@@ -171,10 +243,10 @@ export default function FormDialog({ type }) {
                 },
               }}
             >
-              Insert Photo
+              {imageName ? `Uploaded: ${imageName}` : "Insert Photo"}
               <VisuallyHiddenInput
                 type="file"
-                onChange={(event) => console.log(event.target.files)}
+                onChange={handleImageChange}
                 multiple
               />
             </Button>
@@ -188,14 +260,14 @@ export default function FormDialog({ type }) {
                     sx={{ color: "white", opacity: "60%" }}
                     id="outlined-helper-text"
                   >
-                    {type === "trainer" ? "Exercise" : "Food"}
+                    {type === "Trainer" ? "Exercise" : "Food"}
                   </FormHelperText>
                   <OutlinedInput
-                    value={type === "trainer" ? field.exercise : field.food}
+                    value={type === "Trainer" ? field.exercise : field.food}
                     onChange={(e) =>
                       handleFieldChange(
                         index,
-                        type === "trainer" ? "exercise" : "food",
+                        type === "Trainer" ? "exercise" : "food",
                         e.target.value
                       )
                     }
@@ -212,16 +284,16 @@ export default function FormDialog({ type }) {
                 <FormControl sx={{ m: 1 }} variant="outlined">
                   <FormHelperText
                     sx={{ color: "white", opacity: "60%" }}
-                    id="outlined-helper-text"
-                  >
-                    {type === "trainer" ? "Reps" : "Calories"}
+                    id="outlined- helper-text"
+                  > 
+                    {type === "Trainer" ? "Reps" : "Calories"}
                   </FormHelperText>
                   <OutlinedInput
-                    value={type === "trainer" ? field.reps : field.calories}
+                    value={type === "Trainer" ? field.reps : field.calories}
                     onChange={(e) =>
                       handleFieldChange(
                         index,
-                        type === "trainer" ? "reps" : "calories",
+                        type === "Trainer" ? "reps" : "calories",
                         e.target.value
                       )
                     }
@@ -234,7 +306,7 @@ export default function FormDialog({ type }) {
                   />
                 </FormControl>
               </Grid>
-              {type === "trainer" && (
+              {type === "Trainer" && (
                 <Grid item xs={4}>
                   <FormControl sx={{ m: 1 }} variant="outlined">
                     <FormHelperText
@@ -277,16 +349,19 @@ export default function FormDialog({ type }) {
           </IconButton>
         </DialogContent>
         <DialogActions>
-          <Button 
-            sx={{ color: "#ED6262" ,  
+          <Button
+            sx={{
+              color: "#ED6262",
               fontSize: "16px",
-              m:1,
+              m: 1,
               "&:hover": {
                 backgroundColor: "#ED6262",
                 color: "white",
-               },}} 
-            type="submit">
-              Post
+              },
+            }}
+            type="submit"
+          >
+            Post
           </Button>
         </DialogActions>
       </Dialog>

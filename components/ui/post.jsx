@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
@@ -11,14 +9,15 @@ import Collapse from "@mui/material/Collapse";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import { blueGrey, red } from "@mui/material/colors";
+import { blueGrey } from "@mui/material/colors";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { Box, Grid, CircularProgress } from "@mui/material";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation"; // Updated import
+import { useRouter } from "next/navigation";
+import { ContactlessOutlined } from "@mui/icons-material";
 
 const Comment = dynamic(() => import("./comment"), { ssr: false });
 
@@ -40,6 +39,7 @@ export default function Post({ post_id, email }) {
   const [showComment, setShowComment] = React.useState(false);
   const [listGroups, setListGroups] = React.useState([]);
   const router = useRouter();
+  const [like, setLike] = React.useState(false);
 
   React.useEffect(() => {
     async function fetchPost() {
@@ -54,12 +54,12 @@ export default function Post({ post_id, email }) {
         if (data.content_type === "Trainer") {
           groups.push({
             title: "Exercises",
-            items: data.details.map((d) => `${d.exercise} (Sets: ${d.sets}, Reps: ${d.reps})`),
+            items: data.details.map((d) => ({ exercise: d.exercise, reps: d.reps, sets: d.sets })),
           });
         } else if (data.content_type === "Nutritionist") {
           groups.push({
             title: "Food Items",
-            items: data.details.map((d) => `${d.food} - ${d.calories} kcal`),
+            items: data.details.map((d) => ({ food: d.food, calories: d.calories })),
           });
         }
 
@@ -77,6 +77,33 @@ export default function Post({ post_id, email }) {
   const handleExpandClick = () => setExpanded(!expanded);
   const toggleComment = () => setShowComment((prev) => !prev);
 
+  const handleLikeClick = async () => {
+    try {
+      if (!like) {
+        const res = await fetch(`/api/like/${post_id}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+        console.log(res);
+        if (res.ok) {
+          setLike(true);
+        }
+      } else {
+        const res = await fetch(`/api/like/${post_id}`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+        console.log(res);
+        if (res.ok) {
+          setLike(false);
+        }
+      }
+    } catch (error) {
+      console.error("Error liking/unliking post:", error);
+    }
+  };
   const handleCardHeaderClick = () => {
     if (post && post.professional_id) {
       router.push(`/profile?professional_id=${post.professional_id}`);
@@ -85,12 +112,7 @@ export default function Post({ post_id, email }) {
 
   if (loading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <CircularProgress />
       </Box>
     );
@@ -98,12 +120,7 @@ export default function Post({ post_id, email }) {
 
   if (!post) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <Typography variant="h6" color="error">
           Post not found
         </Typography>
@@ -112,17 +129,12 @@ export default function Post({ post_id, email }) {
   }
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center">
+    <Box display="flex" justifyContent="center" alignItems="center" mt={4}>
       <Card
         sx={{
           maxWidth: 800,
           borderRadius: 2,
-          bgcolor:
-            post.content_type === "Trainer"
-              ? "#2B2231"
-              : post.content_type === "Nutritionist"
-              ? "#222F31"
-              : "#2B2231",
+          bgcolor: post.content_type === "Trainer" ? "#2B2231" : post.content_type === "Nutritionist" ? "#222F31" : "#2B2231",
         }}
       >
         <CardHeader
@@ -138,12 +150,12 @@ export default function Post({ post_id, email }) {
           }
           title={post.user_name}
           subheader={post.created_date}
-          sx={{ color: blueGrey[50], cursor: "pointer" }} // Add cursor pointer
+          sx={{ color: blueGrey[50], cursor: "pointer" }}
           subheaderTypographyProps={{ sx: { color: blueGrey[200] } }}
-          onClick={handleCardHeaderClick} // Add onClick handler
+          onClick={handleCardHeaderClick}
         />
 
-        <Grid container>
+        <Grid container sx={{ width: "800px" }}>
           <Grid item xs={5} sx={{ ml: 2 }}>
             <CardMedia
               component="img"
@@ -161,30 +173,48 @@ export default function Post({ post_id, email }) {
             <Grid container sx={{ ml: 2 }} spacing={2}>
               {listGroups.map((group, groupIndex) => (
                 <Grid item xs={12} key={groupIndex}>
-                  <Typography
-                    variant="body2"
-                    sx={{ color: "white", fontSize: 14 }}
-                  >
-                    {group.title}
-                  </Typography>
-                  {group.items.map((item, index) => (
-                    <Typography
-                      key={index}
-                      variant="body2"
-                      sx={{
+                  <Typography variant="body2" sx={{
                         color: "white",
                         fontSize: 14,
-                        bgcolor: "#283138",
-                        mt: 1,
                         pt: 0.5,
                         pl: 1,
                         mr: 2,
                         pb: 0.5,
                         borderRadius: 1,
-                      }}
-                    >
-                      {item}
-                    </Typography>
+                      }}>
+                    {group.title}
+                  </Typography>
+                  {group.items.map((item, index) => (
+                    <Grid container spacing={2} key={index} sx={{ pt: 1 }}>
+                      <Grid item xs={6}>
+                        <Typography variant="body2" sx={{
+                        color: "white",
+                        fontSize: 14,
+                        bgcolor: "#283138",
+                        pt: 0.5,
+                        pl: 1,
+                        mr: 2,
+                        pb: 0.5,
+                        borderRadius: 1,
+                      }}>
+                          {item.food || item.exercise}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography variant="body2" sx={{
+                        color: "white",
+                        fontSize: 14,
+                        bgcolor: "#283138",
+                        pt: 0.5,
+                        pl: 1,
+                        mr: 2,
+                        pb: 0.5,
+                        borderRadius: 1,
+                      }}>
+                          {item.calories || `${item.reps} Reps, ${item.sets} Sets`}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   ))}
                 </Grid>
               ))}
@@ -192,14 +222,10 @@ export default function Post({ post_id, email }) {
           </Grid>
         </Grid>
         <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites" sx={{ color: "white" }}>
+          <IconButton onClick={handleLikeClick} aria-label="add to favorites" sx={{ color: like ? "red" : "white" }}>
             <FavoriteIcon />
           </IconButton>
-          <IconButton
-            onClick={toggleComment}
-            aria-label="comment"
-            sx={{ color: "white" }}
-          >
+          <IconButton onClick={toggleComment} aria-label="comment" sx={{ color: "white" }}>
             <ModeCommentIcon />
           </IconButton>
           <ExpandMore
@@ -215,9 +241,7 @@ export default function Post({ post_id, email }) {
 
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
-            <Typography sx={{ marginBottom: 2, color: "white" }}>
-              Descriptions:
-            </Typography>
+            <Typography sx={{ marginBottom: 2, color: "white" }}>Descriptions:</Typography>
             <Typography sx={{ marginBottom: 2, color: "white" }}>
               {post.content || "No additional details provided"}
             </Typography>
