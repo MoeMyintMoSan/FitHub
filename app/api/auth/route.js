@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { findUserByEmail, createUser } from "../db/queries";
-import bcrypt from 'bcryptjs';
 
 export async function POST(request) {
   try {

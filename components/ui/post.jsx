@@ -79,7 +79,7 @@ export default function Post({ post_id }) {
 
   const handleCardHeaderClick = () => {
     if (post && post.professional_id) {
-      router.push(`/profile?professional_id=${post.professional_id}`);
+      router.push(`/profile?user_id=${post.professional_id}`);
     }
   };
 
