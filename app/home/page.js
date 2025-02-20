@@ -1,39 +1,67 @@
 "use client";
-import React, { useEffect } from "react";
-import Layout from "@/components/ui/layout"; // Import the Layout component
-import { useSession, signIn } from "next-auth/react"; // Import session and signIn
+import React, { useEffect, useState } from "react";
+import Layout from "@/components/ui/layout";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Post from "@/components/ui/post";
-import CreatePost from "@/components/ui/createPost"; // Import the Post component
-//Reon was here
+import CreatePost from "@/components/ui/createPost";
+
+
 const HomePage = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
-  
+  const email = session?.user?.email;
+  const [posts, setPosts] = useState([]);
+  const [user, setUser] = useState([]);
+
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/"); // Redirect to sign-in if not authenticated
+    async function fetchPosts() {
+      try {
+        const res = await fetch("/api/posts");
+        if (!res.ok) throw new Error("Failed to fetch posts");
+  
+        const data = await res.json();
+        console.log("Fetched posts:", data); // Debugging
+        setPosts(data); // Ensure this updates state
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
     }
-  }, [status, router]);
+  
+    if (status === "authenticated") {
+      fetchPosts(); // Call the function here
+    } else if (status === "unauthenticated") {
+      router.push("/");
+    }
+    
+    async function getUser(){
+      const res = await fetch(`/api/users?email=${email}`);
+      const data = await res.json();
+      setUser(data);
+    }
+    getUser();
+  }, [status, router, email]);
 
   if (status === "loading") {
-    return <p>Loading...</p>; // Show a loading state while checking auth status
+    return <p>Loading...</p>;
   }
 
   if (status === "unauthenticated") {
-    return null; // Prevent rendering until redirected
+    return null;
   }
+
   return (
     <Layout pathname={"/home"}>
-      {/* Wrap the homepage content inside the Layout */}
-      <Post post_id={7}/>
-      <br />
-      <Post post_id={8}/>
-      <br />
-      <Post post_id={9}/>
+      {posts.length > 0 ? (
+        posts.map((post) => {
+          console.log("Rendering post:", post.post_id);
+          return <Post key={post.post_id} post_id={post.post_id} email={email} />;
+        })
+      ) : (
+        <p>No posts available</p>
+      )}
       <div style={{ position: "fixed", bottom: "20px", right: "20px" }}>
-        <CreatePost type="nutritionist" />
-        {/* The Post component will be rendered inside the layout */}
+        <CreatePost type ={user.user_type} email={email} />
       </div>
     </Layout>
   );
