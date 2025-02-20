@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import sql from "@/app/api/db/config";
+import sql from "../db/config";
 import { findUserByEmail } from "../db/queries";
 
 
