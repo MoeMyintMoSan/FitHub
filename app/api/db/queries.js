@@ -282,10 +282,10 @@ export async function findCurrentUserByEmail(email) {
   }
 }
 
-// Example implementation of getStatusRL function
+// Query to get status of register like and permission
 export async function getStatusRL(userId1, userId2) {
   try {
-
+    // Check if athlete is registered with this professional
     const register = await sql`
       SELECT * 
       FROM register 
@@ -293,22 +293,69 @@ export async function getStatusRL(userId1, userId2) {
         AND professional_id = ${userId2}
     `;
 
+    // Check if athlete has liked the professional
     const like = await sql`
       SELECT * 
       FROM like_pro 
       WHERE athlete_id = ${userId1} 
         AND professional_id = ${userId2}
     `;
-    
-    const status = {
+
+    // Get the user type of the professional
+    const professionalData = await sql`
+      SELECT user_type
+      FROM users
+      WHERE user_id = ${userId2}
+    `;
+
+    if (professionalData.length === 0) {
+      throw new Error("Professional not found");
+    }
+
+    const professionalType = professionalData[0].user_type; // "Trainer" or "Nutritionist"
+
+    // Count how many trainers and nutritionists the athlete has registered with
+    const athleteRegistration = await sql`
+      SELECT COUNT(*) AS trainer_count 
+      FROM register r
+      JOIN users u ON r.professional_id = u.user_id
+      WHERE r.athlete_id = ${userId1} 
+        AND u.user_type = 'Trainer'
+    `;
+
+    const athleteNutritionistRegistration = await sql`
+      SELECT COUNT(*) AS nutritionist_count 
+      FROM register r
+      JOIN users u ON r.professional_id = u.user_id
+      WHERE r.athlete_id = ${userId1} 
+        AND u.user_type = 'Nutritionist'
+    `;
+
+    // Count how many athletes the professional has registered
+    const professionalAthleteCount = await sql`
+      SELECT COUNT(*) AS count
+      FROM register 
+      WHERE professional_id = ${userId2}
+    `;
+
+    // Ensure the athlete can only have 1 trainer and 1 nutritionist
+    const canRegister =
+      (professionalType === "Trainer" && athleteRegistration[0].trainer_count === 0) || 
+      (professionalType === "Nutritionist" && athleteNutritionistRegistration[0].nutritionist_count === 0);
+
+    // Ensure professional has fewer than 10 athletes
+    const canProfessionalRegister = professionalAthleteCount[0].count < 10;
+
+    // Final permission check
+    const permission = canRegister && canProfessionalRegister;
+
+    return {
       isRegistered: register.length > 0,
       isLiked: like.length > 0,
+      permission
     };
-
-    return status;
-  }
-  catch (error) {
-    console.error("Error finding register status by user_id:", error);
+  } catch (error) {
+    console.error("Error fetching register status by user_id:", error);
     throw error;
   }
 }
@@ -371,6 +418,22 @@ export async function unlikeAtoP(athleteId, professionalId) {
     return unlike.length > 0 ? unlike[0] : null;
   } catch (error) {
     console.error("Error unliking professional by athlete:", error);
+    throw error;
+  }
+}
+
+// Query to fetch all posts by id
+export async function fetchPostsById(id) {
+  try {
+    const posts = await sql`
+      SELECT * 
+      FROM post
+      WHERE post_visibility = 'Public'
+        AND professional_id = ${id}
+    `;
+    return posts;
+  } catch (error) {
+    console.error("Error fetching posts by id:", error);
     throw error;
   }
 }

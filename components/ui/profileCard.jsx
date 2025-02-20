@@ -38,6 +38,7 @@ export default function ProfileCard({ user1, user2 }) {
   const [userData, setUserData] = useState(null);
   const [originalUserData, setOriginalUserData] = useState(null);
   const [proData, setProData] = useState(null);
+  const [postData, setPostData] = useState(null);
 
   const self = user1 === user2;
   const currentUserFetched = useRef(false);
@@ -73,14 +74,18 @@ export default function ProfileCard({ user1, user2 }) {
           .then(response => response.json()),
         fetch(`/api/users/professionals/data?user_id=${encodeURIComponent(userData?.user_id)}`)
           .then(response => response.json()),
+        fetch(`/api/users/professionals/post?user_id=${encodeURIComponent(userData?.user_id)}`)
+          .then(response => response.json())
       ])
-        .then(([bioData, proData]) => {
+        .then(([bioData, proData, postData]) => {
           console.log("Fetched professional bio:", bioData);
           console.log("Fetched professional data:", proData);
+          console.log("Fetched professional post:", postData);
 
           setUserData(prev => ({ ...prev, ...bioData }));
           setOriginalUserData(prev => ({ ...prev, ...bioData }));
           setProData(proData);
+          setPostData(postData);
 
           if (proData?.likePro?.count > 10) {
             setShowCheckMark(true);
@@ -508,23 +513,14 @@ export default function ProfileCard({ user1, user2 }) {
                 <Typography>
                   Posts
                 </Typography>
-                <CusBox type={2} obj={<Post
-                  type="trainer"
-                  avatarLabel="K"
-                  title="KyawGyi_Fitness"
-                  subheader="December 28, 2024"
-                  image="https://images.everydayhealth.com/images/healthy-living/fitness/everything-you-need-know-about-fitness-1440x810.jpg"
-                  imageAlt="Fitness"
-                  mainContent="Beginner guide to weight loss and fitness"
-                  listItems={["Sit Ups", "Push Ups", "Lunges"]}
-                  secondaryListItems={["60", "30", "30"]}
-                  tertiaryListItems={["2", "3", "3"]}
-                  expandedDescriptions={[
-                    "DO NOT forget to rest between each set and stay hydrated.",
-                    "These exercises are beginner-friendly and can be done at home. Stay healthy and fit!",
-                  ]}
-                />}>
-                </CusBox>
+                {postData?.length > 0 ? (
+                  postData.map((post) => {
+                    console.log("Rendering post:", post.post_id);
+                    return <CusBox type={2} obj={<Post key={post.post_id} post_id={post.post_id} email={user2} />} />;
+                  })
+                  ) : (
+                  <p>No posts available</p>
+                )}
               </Box>
             </CardContent>
           )}

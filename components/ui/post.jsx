@@ -17,7 +17,6 @@ import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { Box, Grid, CircularProgress } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { ContactlessOutlined } from "@mui/icons-material";
 
 const Comment = dynamic(() => import("./comment"), { ssr: false });
 
@@ -110,6 +109,12 @@ export default function Post({ post_id, email }) {
     }
   };
 
+  const formatDate = (utcDate) => {
+    if (!utcDate) return "";  // Handle null values safely
+    const date = new Date(utcDate);
+    return date.toISOString().split("T")[0]; // Extract only YYYY-MM-DD
+  };
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -149,7 +154,7 @@ export default function Post({ post_id, email }) {
             </IconButton>
           }
           title={post.user_name}
-          subheader={post.created_date}
+          subheader={formatDate(post.created_date)}
           sx={{ color: blueGrey[50], cursor: "pointer" }}
           subheaderTypographyProps={{ sx: { color: blueGrey[200] } }}
           onClick={handleCardHeaderClick}
