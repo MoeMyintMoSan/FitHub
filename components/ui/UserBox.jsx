@@ -1,8 +1,25 @@
 import React from "react";
+import { useEffect } from "react";
 import { Box, Typography, Chip, Grid } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const UserBox = ({ account, onClick }) => {
-  const { user_name, user_type, pro_type, like_count } = account;
+  const { user_id, user_name, user_type, pro_type, like_count } = account;
+  const [likeCount, setLikeCount] = React.useState(0);
+
+  useEffect(() => {
+    if (user_type === "athlete") return;
+    fetch(`/api/search?user_id=${encodeURIComponent(user_id)}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Fetched data:", data);
+        setLikeCount(data.likePro);
+      })
+      .catch(error => {
+        console.error("Error fetching like count:", error);
+        setLikeCount(0);
+      });
+  }, [user_id]);
 
   return (
     <Box
@@ -44,7 +61,14 @@ const UserBox = ({ account, onClick }) => {
         {/* Like count on the right */}
         <Grid item xs={4} sx={{ display: "flex", justifyContent: "flex-end" }}>
           <Typography sx={{ color: "#ED6262", fontWeight: "bold" }}>
-            ❤️ {like_count}
+            {likeCount.count > 0 && (
+              <CheckCircleIcon
+                sx={{
+                  color: "green", // Green color for checkmark
+                  fontSize: "1.5rem", // Adjust size as needed
+                }}
+              />
+            )}
           </Typography>
         </Grid>
       </Grid>

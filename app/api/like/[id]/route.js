@@ -1,5 +1,5 @@
-import sql from "@/app/api/db/config";
-import { findUserByEmail } from "@/app/api/db/queries";
+import sql from "../../db/config";
+import { findUserByEmail } from "../../db/queries";
 
 // POST - Like a post
 export async function POST(request, { params }) {

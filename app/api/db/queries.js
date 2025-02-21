@@ -140,9 +140,6 @@ export async function fetchAccountsByUserType(userId) {
   }
 }
 
-
-
-
 // Query to find a professional's post count by user_id
 export async function postCountsById(id) {
   try {
@@ -241,6 +238,16 @@ export async function updateToProfessionalById(id, type) {
     `;
 
     await sql`
+      DELETE FROM private_feed
+      WHERE athlete_id = ${id};
+    `;
+
+    await sql`
+      DELETE FROM register
+      WHERE athlete_id = ${id};
+    `;
+
+    await sql`
       INSERT INTO professional (professional_id, bio)
       VALUES (${id}, ${"No Bio Yet"});
     `;
@@ -248,6 +255,21 @@ export async function updateToProfessionalById(id, type) {
     return updatedUser.length > 0 ? updatedUser[0] : null;
   } catch (error) {
     console.error("Error updating user to professional by user_id:", error);
+    throw error;
+  }
+}
+
+// Query to find bio by user_id
+export async function findBioById(id) {
+  try {
+    const bio = await sql`
+      SELECT bio 
+      FROM professional 
+      WHERE professional_id = ${id}
+    `;
+    return bio.length > 0 ? bio[0] : null;
+  } catch (error) {
+    console.error("Error finding bio by user_id:", error);
     throw error;
   }
 }
@@ -375,7 +397,7 @@ export async function registerAtoP(athleteId, professionalId) {
   }
 }
 
-// Query to unregister an athlete from a professional
+// Query to unregister an athlete from a professional and delete related data
 export async function unregisterAtoP(athleteId, professionalId) {
   try {
     const unregister = await sql`
@@ -384,6 +406,16 @@ export async function unregisterAtoP(athleteId, professionalId) {
         AND professional_id = ${professionalId}
       RETURNING *;
     `;
+
+    await sql`
+      DELETE FROM post
+      WHERE post_id IN (
+        SELECT post_id FROM private_feed 
+        WHERE athlete_id = ${athleteId} 
+        AND professional_id = ${professionalId}
+      );
+    `;
+
     return unregister.length > 0 ? unregister[0] : null;
   } catch (error) {
     console.error("Error unregistering athlete from professional:", error);
