@@ -74,7 +74,7 @@ const Layout = ({ children, pathname }) => {
               
               <Box>
                   <a href="#" className="text-white pr-10">
-                      Profile
+                      
                   </a>
               </Box>
           </Toolbar>

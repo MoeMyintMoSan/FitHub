@@ -2,85 +2,73 @@
 
 import * as React from "react";
 import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Fab from "@mui/material/Fab";
+import {
+  Box, Fab, Button, TextField, Dialog, DialogActions, DialogContent,
+  DialogTitle, Select, MenuItem, FormControl, InputLabel, OutlinedInput,
+  FormHelperText, Grid, IconButton
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import FormControl from "@mui/material/FormControl";
-import IconButton from "@mui/material/IconButton";
-import FormHelperText from "@mui/material/FormHelperText";
-import Grid from "@mui/material/Grid";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import CloseIcon from "@mui/icons-material/Close";
 import { UploadButton } from "./uploadthing";
+import { Typography } from "antd";
 
 export default function FormDialog({ type, email }) {
   const [open, setOpen] = React.useState(false);
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [image, setImage] = React.useState(null);
-  const [imageName, setImageName] = React.useState(""); // Track the uploaded file name
   const [fields, setFields] = React.useState([
     type === "Trainer"
       ? { exercise: "", reps: "", sets: "" }
       : { food: "", calories: "" },
   ]);
+  const [accounts, setAccounts] = React.useState([]);
+  const [selectedAthletes, setSelectedAthletes] = React.useState([]);
+  const [visibility, setVisibility] = React.useState("Public");
+  const uniqueAccounts = Array.from(new Map(accounts.map(item => [item.user_id, item])).values());
+
+  React.useEffect(() => {
+    if (visibility === "Private") {
+      fetch(`/api/users?email=${encodeURIComponent(email)}`)
+        .then((response) => response.json())
+        .then((data) => {
+          const userId = data.user_id;
+          // Fetch the relevant accounts based on the user's type
+          fetch(`/api/privatefeed/${userId}`)
+            .then((response) => response.json())
+            .then((data) => setAccounts(data))
+            .catch((error) => console.error("Error fetching accounts:", error));
+        })
+    }
+  }, [visibility, email]);
+
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
+
   const handleClose = () => {
     setOpen(false);
     setImage(null); // Reset the image state
-    setImageName(""); // Reset the image name
   };
 
   const handleAddField = () => {
     setFields([
       ...fields,
-      type === "trainer"
+      type === "Trainer"
         ? { exercise: "", reps: "", sets: "" }
         : { food: "", calories: "" },
     ]);
   };
 
+
   const handleFieldChange = (index, field, value) => {
     const newFields = [...fields];
     newFields[index][field] = value;
     setFields(newFields);
-  };
-
-  const handleImageChange = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    try {
-      // Upload the file using UploadThing
-      const uploadRes = await fetch("/api/uploadthing", {
-        method: "POST",
-        body: file,
-      });
-
-      if (!uploadRes.ok) {
-        throw new Error("Failed to upload image");
-      }
-
-      const { url } = await uploadRes.json(); // Get the uploaded file URL
-      setImage(url); // Store the image URL
-      setImageName(file.name); // Update the UI with the file name
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      setImage(null);
-      setImageName("");
-    }
+    console.log("Fields: ", fields);
   };
 
   const handleSubmit = async (event) => {
@@ -90,12 +78,18 @@ export default function FormDialog({ type, email }) {
     formData.append("email", email);
     formData.append("title", title);
     formData.append("content", description);
-    formData.append("post_visibility", "Public"); // or "Private" based on user choice
+    formData.append("post_visibility", visibility); // or "Private" based on user choice
     formData.append("image", image);
     formData.append("details", JSON.stringify(fields));
 
+    if (visibility === "Private") {
+      formData.append("referenced_athletes", JSON.stringify(selectedAthletes));
+    }
+
+    const apiPath = visibility === "Public" ? "/api/posts" : `/api/privatefeed/posts`;
+
     try {
-      const response = await fetch("/api/posts", {
+      const response = await fetch(apiPath, {
         method: "POST",
         body: formData,
       });
@@ -213,8 +207,49 @@ export default function FormDialog({ type, email }) {
               }}
             />
           </Box>
-          <Box sx={{ width: 500, maxWidth: "100%" }}>
+          <Box sx={{ width: 500, maxWidth: "100%", mb: 2 }}>
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel>Visibility</InputLabel>
+            <Select value={visibility} onChange={(e) => setVisibility(e.target.value)} sx={{ background: "#758187", color: "white" }}>
+              <MenuItem value="Public">Public</MenuItem>
+              <MenuItem value="Private">Private</MenuItem>
+            </Select>
+          </FormControl>
+          {visibility === "Private" && (
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel>Refer Athletes</InputLabel>
+              <Select multiple value={selectedAthletes} onChange={(e) => setSelectedAthletes(e.target.value)} input={<OutlinedInput />} sx={{ background: "#758187", color: "white" }}>
+                {uniqueAccounts.map((athlete) => (
+                  <MenuItem key={athlete.user_id} value={athlete.user_id}>
+                    {athlete.user_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+          </Box>
+          <Box >
             <UploadButton
+             appearance={{
+              button({ ready, isUploading }) {
+                return {
+                  background: "#758187",
+                  fontSize: "14px",
+                  color: "black",
+                  hover: {
+                    background: "#9EAAB1",
+                  },
+                  ...(ready && { color: "#9EAAB1" }),
+                  ...(isUploading && { color: "#9EAAB1" }),
+                };
+              },
+              container: {
+                marginTop: "1rem",
+              },
+              allowedContent: {
+                color: "#a1a1aa",
+              },
+            }}
               endpoint="imageUploader"
               onClientUploadComplete={(res) => {
                 setImage(res[0].url);
@@ -226,30 +261,6 @@ export default function FormDialog({ type, email }) {
                 alert(`ERROR! ${error.message}`);
               }}
             />
-            <Button
-              fullWidth
-              component="label"
-              role={undefined}
-              variant="contained"
-              tabIndex={-1}
-              startIcon={<AddPhotoAlternateIcon />}
-              sx={{
-                height: "100px",
-                background: "#758187",
-                borderRadius: "7px",
-                "&:hover": {
-                  backgroundColor: "#9EAAB1",
-                  color: "black",
-                },
-              }}
-            >
-              {imageName ? `Uploaded: ${imageName}` : "Insert Photo"}
-              <VisuallyHiddenInput
-                type="file"
-                onChange={handleImageChange}
-                multiple
-              />
-            </Button>
           </Box>
           {/* Dynamic Grid Fields */}
           {fields.map((field, index) => (

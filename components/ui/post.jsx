@@ -73,6 +73,22 @@ export default function Post({ post_id, email }) {
     fetchPost();
   }, [post_id]);
 
+  React.useEffect(() => {
+    const fetchLikeStatus = async () => {
+      try {
+        const response = await fetch(`/api/like?postId=${post_id}&email=${email}`);
+        const data = await response.json();
+        if (data.liked) {
+          setLike(true);
+        }
+      } catch (error) {
+        console.error("Error fetching like status:", error);
+      }
+    };
+
+    fetchLikeStatus();
+  }, [post_id, email]);
+
   const handleExpandClick = () => setExpanded(!expanded);
   const toggleComment = () => setShowComment((prev) => !prev);
 
@@ -137,7 +153,7 @@ export default function Post({ post_id, email }) {
     <Box display="flex" justifyContent="center" alignItems="center" mt={4}>
       <Card
         sx={{
-          maxWidth: 800,
+          width: 800, // Fixed width
           borderRadius: 2,
           bgcolor: post.content_type === "Trainer" ? "#2B2231" : post.content_type === "Nutritionist" ? "#222F31" : "#2B2231",
         }}
@@ -160,13 +176,13 @@ export default function Post({ post_id, email }) {
           onClick={handleCardHeaderClick}
         />
 
-        <Grid container sx={{ width: "800px" }}>
+        <Grid container sx={{ width: "100%", maxWidth: "800px" }}>
           <Grid item xs={5} sx={{ ml: 2 }}>
             <CardMedia
               component="img"
               image={post.image || "https://via.placeholder.com/550x250"}
               alt={post.title}
-              sx={{ height: "250px", width: "550px", borderRadius: 4 }}
+              sx={{ height: 250, width: 550, borderRadius: 4, objectFit: "cover", objectPosition: "center" }} // Fixed image size
             />
           </Grid>
           <Grid item xs={6} sx={{ ml: 2 }}>

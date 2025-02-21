@@ -1,7 +1,6 @@
 import sql from "../../db/config";
 import { findUserByEmail } from "../../db/queries";
 
-// POST - Like a post
 export async function POST(request, { params }) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
@@ -50,7 +49,7 @@ export async function DELETE(request, { params }) {
 
     const user_id = user.user_id;
 
-    const unlike = await sql`
+    await sql`
       DELETE FROM like_post
       WHERE post_id = ${id} AND user_id = ${user_id};
     `;

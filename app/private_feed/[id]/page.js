@@ -64,7 +64,7 @@ const PrivateFeedPosts = ({ params }) => {
       {posts.length > 0 ? (
         posts.map((post) => (
           <div key={post.post_id} style={{ marginBottom: "20px" }}>
-            <Post post_id={post.post_id} />
+            <Post post_id={post.post_id} email={session?.user?.email} />
           </div>
         ))
       ) : (
