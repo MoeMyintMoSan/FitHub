@@ -11,7 +11,9 @@ const PrivateFeed = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [accounts, setAccounts] = useState([]);
-
+  const uniqueAccounts = Array.from(new Map(accounts.map(item => [item.user_id, item])).values());
+  const [usertype, setUserType] = useState([]);
+  const email = session?.user?.email;
   // Authentication check and redirection
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -23,10 +25,11 @@ const PrivateFeed = () => {
   useEffect(() => {
     if (status === "authenticated" && session?.user?.email) {
       // Fetch the current user's ID
-      fetch(`/api/users?email=${encodeURIComponent(session.user.email)}`)
+      fetch(`/api/users?email=${encodeURIComponent(email)}`)
         .then((response) => response.json())
         .then((data) => {
           const userId = data.user_id;
+          setUserType(data.user_type);
           // Fetch the relevant accounts based on the user's type
           fetch(`/api/privatefeed/${userId}`)
             .then((response) => response.json())
@@ -55,7 +58,7 @@ const PrivateFeed = () => {
   return (
     <Layout pathname={"/private_feed"}>
       <h1 className="my-2 "></h1>
-      {accounts.map((account) => (
+      {uniqueAccounts.map((account) => (
         <UserBox
           key={account.user_id}
           account={account}
@@ -63,7 +66,7 @@ const PrivateFeed = () => {
         />
       ))}
       <div style={{ position: "fixed", bottom: "20px", right: "20px" }}>
-        <CreatePost type="trainer" />
+        {usertype === "Athlete" ? <br/> : <CreatePost type={usertype} email={email} /> }
       </div>
     </Layout>
   );

@@ -15,6 +15,7 @@ const HomePage = () => {
   const [user, setUser] = useState([]);
 
   useEffect(() => {
+    
     async function fetchPosts() {
       try {
         const res = await fetch("/api/posts");
@@ -61,7 +62,7 @@ const HomePage = () => {
         <p>No posts available</p>
       )}
       <div style={{ position: "fixed", bottom: "20px", right: "20px" }}>
-        <CreatePost type ={user.user_type} email={email} />
+        {user.user_type === "Athlete" ?  <br /> : <CreatePost type={user.user_type} email={email} />}
       </div>
     </Layout>
   );
