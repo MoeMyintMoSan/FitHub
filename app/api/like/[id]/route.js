@@ -1,7 +1,6 @@
 import sql from "@/app/api/db/config";
 import { findUserByEmail } from "@/app/api/db/queries";
 
-// POST - Like a post
 export async function POST(request, { params }) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
