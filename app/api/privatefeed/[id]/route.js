@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { fetchAccountsByUserType } from "../../db/queries";
 
-export async function GET(request, { params }) {
+export async function GET(request, context) {
+  const { params } = await context;
   const { id } = params;
 
   try {
