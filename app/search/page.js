@@ -4,11 +4,13 @@ import Layout from "@/components/ui/layout";
 import { Tabs, Tab, Box, TextField, Typography, Grid } from "@mui/material";
 import Post from "@/components/ui/post";
 import UserBox from "@/components/ui/UserBox"; // Import the UserBox component
+import { useRouter } from "next/navigation";
 
 const SearchPage = () => {
   const [tab, setTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
     if (!searchTerm.trim()) {
@@ -43,6 +45,10 @@ const SearchPage = () => {
   // Define the handleClick function for UserBox
   const handleUserClick = (account) => {
     console.log("User clicked:", account);
+    if (account && account.user_id) {
+      console.log("Navigating to user profile...");
+      router.push(`/profile?user_id=${account.user_id}`);
+    }
     // Add your logic here, e.g., navigate to the user's profile
   };
 

@@ -12,7 +12,7 @@ const HomePage = () => {
   const router = useRouter();
   const email = session?.user?.email;
   const [posts, setPosts] = useState([]);
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     
@@ -35,12 +35,37 @@ const HomePage = () => {
       router.push("/");
     }
     
-    async function getUser(){
-      const res = await fetch(`/api/users?email=${email}`);
-      const data = await res.json();
-      setUser(data);
+  //   async function getUser(){
+  //     const res = await fetch(`/api/users?email=${email}`);
+  //     const data = await res.json();
+  //     setUser(data);
+  //   }
+  //   getUser();
+  // }, [status, router, email]);
+
+  // if (status === "loading") {
+  //   return <p>Loading...</p>;
+  // }
+
+  // if (status === "unauthenticated") {
+  //   return null;
+  // }
+    async function getUser() {
+      try {
+        const res = await fetch(`/api/users?email=${email}`);
+        const data = await res.json();
+        setUser(data);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
     }
-    getUser();
+
+    if (status === "authenticated") {
+      fetchPosts();
+      getUser();
+    } else if (status === "unauthenticated") {
+      router.push("/");
+    }
   }, [status, router, email]);
 
   if (status === "loading") {
@@ -62,7 +87,7 @@ const HomePage = () => {
         <p>No posts available</p>
       )}
       <div style={{ position: "fixed", bottom: "20px", right: "20px" }}>
-        {user.user_type === "Athlete" ?  <br /> : <CreatePost type={user.user_type} email={email} />}
+        {user && user.user_type !== "Athlete" &&  <CreatePost type={user.user_type} email={email}/>}
       </div>
     </Layout>
   );

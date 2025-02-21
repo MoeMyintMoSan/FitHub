@@ -12,7 +12,7 @@ const PrivateFeed = () => {
   const router = useRouter();
   const [accounts, setAccounts] = useState([]);
   const uniqueAccounts = Array.from(new Map(accounts.map(item => [item.user_id, item])).values());
-  const [usertype, setUserType] = useState([]);
+  const [usertype, setUserType] = useState(null);
   const email = session?.user?.email;
   // Authentication check and redirection
   useEffect(() => {
@@ -66,7 +66,8 @@ const PrivateFeed = () => {
         />
       ))}
       <div style={{ position: "fixed", bottom: "20px", right: "20px" }}>
-        {usertype === "Athlete" ? <br/> : <CreatePost type={usertype} email={email} /> }
+        {/* {usertype === "Athlete" ? <br/> : <CreatePost type={usertype} email={email} /> } */}
+        {usertype && usertype !== "Athlete" && <CreatePost type={usertype} email={email} />}
       </div>
     </Layout>
   );

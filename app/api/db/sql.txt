@@ -1,0 +1,113 @@
+-- Users Table
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    user_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    user_password VARCHAR(255) NOT NULL,
+    user_type VARCHAR(20) NOT NULL,
+    date_of_birth DATE,
+    height NUMERIC(5, 2),
+    weight NUMERIC(5, 2),
+    body_description TEXT,
+    diet_description TEXT,
+    CONSTRAINT User_user_type_check CHECK (
+        user_type IN ('Athlete', 'Trainer', 'Nutritionist')
+    )
+);
+
+-- Indexes for Users Table
+CREATE UNIQUE INDEX User_pkey ON users (user_id);
+CREATE UNIQUE INDEX User_email_key ON users (email);
+
+-- Athlete Table
+CREATE TABLE Athlete (
+    athlete_id INT UNIQUE NOT NULL,
+    FOREIGN KEY (athlete_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+-- Professional Table
+CREATE TABLE Professional (
+    professional_id INT UNIQUE NOT NULL,
+    bio TEXT,
+    FOREIGN KEY (professional_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+-- Post Table (updated)
+CREATE TABLE Post (
+    post_id SERIAL PRIMARY KEY,
+    professional_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    content TEXT,
+    image VARCHAR(255),
+    content_type VARCHAR(20) CHECK (content_type IN ('Trainer', 'Nutritionist')) NOT NULL,
+    post_visibility VARCHAR(20) CHECK (post_visibility IN ('Public', 'Private')) NOT NULL,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (professional_id) REFERENCES Professional(professional_id) ON DELETE CASCADE
+);
+
+-- Comment Table (updated)
+CREATE TABLE Comment (
+    comment_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    post_id INT NOT NULL,
+    content TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES Post(post_id) ON DELETE CASCADE
+);
+
+-- like_post Table (updated)
+CREATE TABLE like_post (
+    like_post_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    post_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES Post(post_id) ON DELETE CASCADE
+);
+
+-- Nutritionist_Post_Details Table
+CREATE TABLE Nutritionist_Post_Details (
+    nutritionist_post_detail_id SERIAL PRIMARY KEY,
+    post_id INT NOT NULL,
+    food VARCHAR(255) NOT NULL,
+    calories INT NOT NULL,
+    FOREIGN KEY (post_id) REFERENCES Post(post_id) ON DELETE CASCADE
+);
+
+-- Trainer_Post_Details Table
+CREATE TABLE Trainer_Post_Details (
+    trainer_post_detail_id SERIAL PRIMARY KEY,
+    post_id INT NOT NULL,
+    exercise VARCHAR(255) NOT NULL,
+    reps INT NOT NULL,
+    sets INT NOT NULL,
+    FOREIGN KEY (post_id) REFERENCES Post(post_id) ON DELETE CASCADE
+);
+
+-- Private_Feed Table (updated)
+CREATE TABLE Private_Feed (
+    athlete_id INT NOT NULL,
+    professional_id INT NOT NULL,
+    post_id INT NOT NULL UNIQUE,
+    PRIMARY KEY (athlete_id, professional_id, post_id),
+    FOREIGN KEY (athlete_id) REFERENCES Athlete(athlete_id) ON DELETE CASCADE,
+    FOREIGN KEY (professional_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES Post(post_id) ON DELETE CASCADE
+);
+
+-- Register Table (updated)
+CREATE TABLE Register (
+    athlete_id INT NOT NULL,
+    professional_id INT NOT NULL,
+    PRIMARY KEY (athlete_id, professional_id),
+    FOREIGN KEY (athlete_id) REFERENCES Athlete(athlete_id) ON DELETE CASCADE,
+    FOREIGN KEY (professional_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+-- like_pro Table
+CREATE TABLE like_pro (
+    professional_id INT NOT NULL,
+    athlete_id INT NOT NULL,
+    PRIMARY KEY (professional_id, athlete_id),
+    FOREIGN KEY (professional_id) REFERENCES Professional(professional_id) ON DELETE CASCADE,
+    FOREIGN KEY (athlete_id) REFERENCES Athlete(athlete_id) ON DELETE CASCADE
+);

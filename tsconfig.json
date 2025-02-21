@@ -8,7 +8,9 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     },
     "allowJs": true,
     "skipLibCheck": true,
@@ -28,12 +30,13 @@
     ]
   },
   "include": [
+    "**/.tsx",
+    ".next/types//*.ts",
+    "/*.js",
+    "/*.jsx",
+    "/.ts",
     "next-env.d.ts",
-    ".next/types/**/*.ts",
-    "**/*.ts",
-    "**/*.tsx",
-     "**/*.js", 
-     "**/*.jsx"
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
