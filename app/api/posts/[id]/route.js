@@ -1,5 +1,4 @@
-import sql from "@/api/db/config";
-import { findUserByEmail } from "../../db/queries";
+import sql from "../../db/config";
 
 export async function GET(request, { params }) {
   const resolvedParams = await params;

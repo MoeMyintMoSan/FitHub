@@ -27,59 +27,79 @@ export default function ProfileCard({ user1, user2 }) {
   const [showCheckMark, setShowCheckMark] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
 
+  const [registerText, setRegisterText] = useState("REGISTER");
+  const [likeText, setLikeText] = useState("LIKE");
+
   const [hasChanges, setHasChanges] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const [editDisable, setEditDisable] = useState(false);
 
+  const [currentUserData, setCurrentUserData] = useState(null);
   const [userData, setUserData] = useState(null);
   const [originalUserData, setOriginalUserData] = useState(null);
   const [proData, setProData] = useState(null);
+  const [postData, setPostData] = useState(null);
 
   const self = user1 === user2;
+  const currentUserFetched = useRef(false);
+  const userFetched = useRef(false);
   const proDataFetched = useRef(false);
 
   useEffect(() => {
-    fetch(`/api/users?email=${encodeURIComponent(user2)}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log("Fetched user:", data);
-        setUserData(data);  // Store fetched data in state
-        setOriginalUserData(data);  // Store original data in state
-      })
-      .catch(error => console.error("Error fetching user:", error));
+    if (!userFetched.current && user2) {  // Prevents duplicate fetch
+      userFetched.current = true;
+
+      fetch(`/api/users?email=${encodeURIComponent(user2)}`)
+        .then(response => response.json())
+        .then(data => {
+          console.log("Fetched user:", data);
+          setUserData(data);
+          setOriginalUserData(data);
+        })
+        .catch(error => console.error("Error fetching user:", error));
+    }
   }, [user2]);
 
   useEffect(() => {
-    if (self && userData?.user_type !== 'Athlete' && userData?.user_id && !proDataFetched.current) {
-      fetch(`/api/users/professionals/bio?user_id=${encodeURIComponent(userData?.user_id)}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log("Fetched professional bio:", data);
-          setUserData((prev) => ({ ...prev, ...data }));  // Add data to user data
-          setOriginalUserData((prev) => ({ ...prev, ...data }));  // Add data to original user data
-        })
-        .catch(error => console.error("Error fetching professional bio:", error));
-      fetch(`/api/users/professionals/data?user_id=${encodeURIComponent(userData?.user_id)}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log("Fetched professional data:", data);
-          setProData(data);  // Store fetched data in state
+    if (
+      userData?.user_type !== 'Athlete' &&
+      userData?.user_id &&
+      !proDataFetched.current // Check before running fetch
+    ) {
+      console.log("Fetching professional data...");
+      proDataFetched.current = true; // Prevents multiple fetches
+
+      Promise.all([
+        fetch(`/api/users/professionals/bio?user_id=${encodeURIComponent(userData?.user_id)}`)
+          .then(response => response.json()),
+        fetch(`/api/users/professionals/data?user_id=${encodeURIComponent(userData?.user_id)}`)
+          .then(response => response.json()),
+        fetch(`/api/users/professionals/post?user_id=${encodeURIComponent(userData?.user_id)}`)
+          .then(response => response.json())
+      ])
+        .then(([bioData, proData, postData]) => {
+          console.log("Fetched professional bio:", bioData);
+          console.log("Fetched professional data:", proData);
+          console.log("Fetched professional post:", postData);
+
+          setUserData(prev => ({ ...prev, ...bioData }));
+          setOriginalUserData(prev => ({ ...prev, ...bioData }));
+          setProData(proData);
+          setPostData(postData);
+
+          if (proData?.likePro?.count > 10) {
+            setShowCheckMark(true);
+          } else {
+            setShowCheckMark(false);
+          }
         })
         .catch(error => console.error("Error fetching professional data:", error));
-      proDataFetched.current = true; // Prevent duplicate fetch
     }
-  }, [userData, self]);
+  }, [userData, self, registerText, likeText]); // userData only changes once
 
   useEffect(() => {
     if (self) {
+      setEditDisable(false);
       setShowDetails(true);
       if (userData?.user_type === 'Athlete') {
         setShowButtonBP(true);
@@ -87,61 +107,98 @@ export default function ProfileCard({ user1, user2 }) {
         setShowButtonP(false);
         setShowButtonR(false);
         setShowButtonL(false);
-        setShowCheckMark(false);
       } else {
         setShowButtonBP(false);
         setShowButtonP(true);
         setShowButtonD(false);
         setShowButtonR(false);
         setShowButtonL(false);
-        if (proData?.likePro?.count > 10) { // used 10 instead of 200 for testing purposes
-          setShowCheckMark(true);
-        } else {
-          setShowCheckMark(false);
+      }
+    } else {
+      setEditDisable(true);
+      if (userData?.user_type === 'Athlete') {
+        setShowButtonBP(false);
+        setShowButtonD(false);
+        setShowButtonP(false);
+        setShowButtonR(false);
+        setShowButtonL(false);
+        setShowDetails(true);
+      } else {
+        if (!currentUserFetched.current && user1) {  // Prevent duplicate fetch for current user
+          currentUserFetched.current = true;
+
+          fetch(`/api/users/currentUsers?email=${encodeURIComponent(user1)}`)
+            .then(response => response.json())
+            .then(data => {
+              console.log("Fetched current user:", data);
+              setCurrentUserData(data); // Set the fetched data into state
+            })
+            .catch(error => console.error("Error fetching current user:", error));
         }
+        setShowButtonBP(false);
+        setShowButtonD(true);
+        setShowButtonP(false);
+        setShowDetails(false);
       }
     }
   }, [userData, self]);
-  //     const userType = "ath_to_ath";
-  // const initialStates = user1 === user2
-  // ? {
-  //     showButtonBP: false,
-  //     showButtonD: true,
-  //     showButtonP: false,
-  //     showButtonR: false,
-  //     showButtonL: false,
-  //     showCheckMark: true,
-  //     showDetails: false
-  //   }
-  //   : userType === "pro_other"
-  // ? {
-  //     showButtonBP: false,
-  //     showButtonD: false,
-  //     showButtonP: true,
-  //     showButtonR: false,
-  //     showButtonL: false,
-  //     showCheckMark: false,
-  //     showDetails: true
-  //   }
-  // : userType === "ath_to_ath"
-  // ? {
-  //     showButtonBP: false,
-  //     showButtonD: false,
-  //     showButtonP: false,
-  //     showButtonR: false,
-  //     showButtonL: false,
-  //     showCheckMark: false,
-  //     showDetails: true
-  //   }
-  // : {//ath to pro
-  //     showButtonBP: false,
-  //     showButtonD: true,
-  //     showButtonP: false,
-  //     showButtonR: true,
-  //     showButtonL: true,
-  //     showCheckMark: false,
-  //     showDetails: false
-  //   };
+
+  useEffect(() => {
+    if (currentUserData?.user_type === "Athlete") {
+      fetch(`/api/users/currentUsers/statusRL?userId1=${encodeURIComponent(currentUserData?.user_id)}&userId2=${encodeURIComponent(userData?.user_id)}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setRegisterText(data.isRegistered ? "UNREGISTER" : "REGISTER"); // Toggle text
+          setLikeText(data.isLiked ? "UNLIKE" : "LIKE"); // Toggle text
+          setShowButtonR(true);
+          setShowButtonL(true);
+        })
+        .catch((error) => {
+          console.error("Error fetching user status:", error);
+          setShowButtonR(false);
+          setShowButtonL(false);
+        });
+    } else {
+      setShowButtonR(false);
+      setShowButtonL(false);
+    }
+  }, [currentUserData]); // Dependencies to re-run effect when they change  
+
+  const handleRegisterClick = () => {
+    const action = registerText === "REGISTER" ? "register" : "unregister";
+  
+    fetch(`/api/users/currentUsers/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ athlete_id: currentUserData?.user_id, professional_id: userData?.user_id, action }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          setRegisterText(action === "register" ? "UNREGISTER" : "REGISTER"); // Toggle button text
+          proDataFetched.current = false;
+        }
+      })
+      .catch((error) => console.error("Error updating registration:", error));
+  };
+
+  const handleLikeClick = () => {
+    const action = likeText === "LIKE" ? "like" : "unlike"; // Toggle action
+
+    fetch(`/api/users/currentUsers/like`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ athlete_id: currentUserData?.user_id, professional_id: userData?.user_id, action }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          setLikeText(action === "like" ? "UNLIKE" : "LIKE"); // Toggle button text
+          proDataFetched.current = false;
+        }
+      })
+      .catch((error) => console.error("Error updating like:", error));
+  };
 
   const handleInputChange = (field, value) => {
     setUserData((prev) => {
@@ -295,13 +352,13 @@ export default function ProfileCard({ user1, user2 }) {
                   </CustomButton>
                 )}
                 {showButtonR && (
-                  <CustomButton type={2} onClick={() => console.log('REGISTER clicked')}>
-                    REGISTER
+                  <CustomButton type={2} onClick={handleRegisterClick}>
+                    {registerText}
                   </CustomButton>
                 )}
                 {showButtonL && (
-                  <CustomButton type={2} onClick={() => console.log('LIKE clicked')}>
-                    LIKE
+                  <CustomButton type={2} onClick={handleLikeClick}>
+                    {likeText}
                   </CustomButton>
                 )}
               </Box>
@@ -379,9 +436,9 @@ export default function ProfileCard({ user1, user2 }) {
                   gap: "10px", // Adjust the gap between the boxes
                   width: "100%",
                 }}>
-                  <DetailBox dataTitle="Display Name" dataValue={userData?.user_name} onChange={(value) => handleInputChange(1, value)} />
-                  <DetailBox dataTitle="Weight" dataValue={userData?.weight} onChange={(value) => handleInputChange(2, value)} />
-                  <DetailBox dataTitle="Height" dataValue={userData?.height} onChange={(value) => handleInputChange(3, value)} />
+                  <DetailBox dataTitle="Display Name" dataValue={userData?.user_name} onChange={(value) => handleInputChange(1, value)} disable={editDisable} />
+                  <DetailBox dataTitle="Weight" dataValue={userData?.weight} onChange={(value) => handleInputChange(2, value)} disable={editDisable} />
+                  <DetailBox dataTitle="Height" dataValue={userData?.height} onChange={(value) => handleInputChange(3, value)} disable={editDisable} />
                   <DetailBox dataTitle="Date Of Birth" dataValue={formatDate(userData?.date_of_birth)} disable={true} />
                   {self && (<DetailBox dataTitle="Password" dataValue={userData?.user_password} onChange={(value) => handleInputChange(5, value)} />)}
                 </Box>
@@ -394,10 +451,10 @@ export default function ProfileCard({ user1, user2 }) {
                   gap: "10px", // Adjust the gap between the boxes
                   width: "100%",
                 }}>
-                  <DetailBox dataTitle={"Body Description"} dataValue={userData?.body_description} type="yes" onChange={(value) => handleInputChange(6, value)} />
-                  <DetailBox dataTitle={"Diet Description"} dataValue={userData?.diet_description} type="yes" onChange={(value) => handleInputChange(7, value)} />
+                  <DetailBox dataTitle={"Body Description"} dataValue={userData?.body_description} type="yes" onChange={(value) => handleInputChange(6, value)} disable={editDisable} />
+                  <DetailBox dataTitle={"Diet Description"} dataValue={userData?.diet_description} type="yes" onChange={(value) => handleInputChange(7, value)} disable={editDisable} />
                   {userData?.user_type !== 'Athlete' && (
-                    <DetailBox dataTitle={"Bio"} dataValue={userData?.bio} type="yes" onChange={(value) => handleInputChange(8, value)} />
+                    <DetailBox dataTitle={"Bio"} dataValue={userData?.bio} type="yes" onChange={(value) => handleInputChange(8, value)} disable={editDisable} />
                   )}
                 </Box>
               </Box>
@@ -456,23 +513,14 @@ export default function ProfileCard({ user1, user2 }) {
                 <Typography>
                   Posts
                 </Typography>
-                <CusBox type={2} obj={<Post
-                  type="trainer"
-                  avatarLabel="K"
-                  title="KyawGyi_Fitness"
-                  subheader="December 28, 2024"
-                  image="https://images.everydayhealth.com/images/healthy-living/fitness/everything-you-need-know-about-fitness-1440x810.jpg"
-                  imageAlt="Fitness"
-                  mainContent="Beginner guide to weight loss and fitness"
-                  listItems={["Sit Ups", "Push Ups", "Lunges"]}
-                  secondaryListItems={["60", "30", "30"]}
-                  tertiaryListItems={["2", "3", "3"]}
-                  expandedDescriptions={[
-                    "DO NOT forget to rest between each set and stay hydrated.",
-                    "These exercises are beginner-friendly and can be done at home. Stay healthy and fit!",
-                  ]}
-                />}>
-                </CusBox>
+                {postData?.length > 0 ? (
+                  postData.map((post) => {
+                    console.log("Rendering post:", post.post_id);
+                    return <CusBox type={2} obj={<Post key={post.post_id} post_id={post.post_id} email={user2} />} />;
+                  })
+                  ) : (
+                  <p>No posts available</p>
+                )}
               </Box>
             </CardContent>
           )}

@@ -58,6 +58,19 @@ export async function createUser(userData) {
         (${user_name}, ${email}, ${user_password}, ${user_type}, ${date_of_birth}, ${height}, ${weight}, ${body_description}, ${diet_description})
       RETURNING *;
     `;
+
+    const userId = newUser[0]?.user_id;
+
+    if (!userId) {
+      throw new Error("User ID not returned after insertion");
+    }
+
+    // Insert into another table using the user_id
+    await sql`
+      INSERT INTO athlete (athlete_id)
+      VALUES (${userId});
+    `;
+
     return newUser[0];
   } catch (error) {
     console.error("Error creating user:", error);
@@ -218,6 +231,15 @@ export async function updateToProfessionalById(id, type) {
       RETURNING *;
     `;
 
+    if (!updatedUser.length) {
+      throw new Error("User update failed or user not found.");
+    }
+
+    await sql`
+      DELETE FROM athlete
+      WHERE athlete_id = ${id}; 
+    `;
+
     await sql`
       INSERT INTO professional (professional_id, bio)
       VALUES (${id}, ${"No Bio Yet"});
@@ -229,17 +251,189 @@ export async function updateToProfessionalById(id, type) {
     throw error;
   }
 }
-// Query to find a professional bio by user_id
-export async function findBioById(id) {
+
+// Query to find email by user_id
+export async function findEmailById(id) {
   try {
-    const bio = await sql`
-      SELECT bio 
-      FROM professional 
-      WHERE professional_id = ${id}
+    const email = await sql`
+      SELECT email 
+      FROM users 
+      WHERE user_id = ${id}
     `;
-    return bio.length > 0 ? bio[0] : null;
+    return email.length > 0 ? email[0] : null;
   } catch (error) {
-    console.error("Error finding professional bio by user_id:", error);
+    console.error("Error finding email by user_id:", error);
+    throw error;
+  }
+}
+
+// Query to find current user by email
+export async function findCurrentUserByEmail(email) {
+  try {
+    const currentUser = await sql`
+      SELECT user_id, user_name, email, user_type
+      FROM users 
+      WHERE email = ${email}
+    `;
+    return currentUser.length > 0 ? currentUser[0] : null;
+  } catch (error) {
+    console.error("Error finding current user by email:", error);
+    throw error;
+  }
+}
+
+// Query to get status of register like and permission
+export async function getStatusRL(userId1, userId2) {
+  try {
+    // Check if athlete is registered with this professional
+    const register = await sql`
+      SELECT * 
+      FROM register 
+      WHERE athlete_id = ${userId1} 
+        AND professional_id = ${userId2}
+    `;
+
+    // Check if athlete has liked the professional
+    const like = await sql`
+      SELECT * 
+      FROM like_pro 
+      WHERE athlete_id = ${userId1} 
+        AND professional_id = ${userId2}
+    `;
+
+    // Get the user type of the professional
+    const professionalData = await sql`
+      SELECT user_type
+      FROM users
+      WHERE user_id = ${userId2}
+    `;
+
+    if (professionalData.length === 0) {
+      throw new Error("Professional not found");
+    }
+
+    const professionalType = professionalData[0].user_type; // "Trainer" or "Nutritionist"
+
+    // Count how many trainers and nutritionists the athlete has registered with
+    const athleteRegistration = await sql`
+      SELECT COUNT(*) AS trainer_count 
+      FROM register r
+      JOIN users u ON r.professional_id = u.user_id
+      WHERE r.athlete_id = ${userId1} 
+        AND u.user_type = 'Trainer'
+    `;
+
+    const athleteNutritionistRegistration = await sql`
+      SELECT COUNT(*) AS nutritionist_count 
+      FROM register r
+      JOIN users u ON r.professional_id = u.user_id
+      WHERE r.athlete_id = ${userId1} 
+        AND u.user_type = 'Nutritionist'
+    `;
+
+    // Count how many athletes the professional has registered
+    const professionalAthleteCount = await sql`
+      SELECT COUNT(*) AS count
+      FROM register 
+      WHERE professional_id = ${userId2}
+    `;
+
+    // Ensure the athlete can only have 1 trainer and 1 nutritionist
+    const canRegister =
+      (professionalType === "Trainer" && athleteRegistration[0].trainer_count === 0) || 
+      (professionalType === "Nutritionist" && athleteNutritionistRegistration[0].nutritionist_count === 0);
+
+    // Ensure professional has fewer than 10 athletes
+    const canProfessionalRegister = professionalAthleteCount[0].count < 10;
+
+    // Final permission check
+    const permission = canRegister && canProfessionalRegister;
+
+    return {
+      isRegistered: register.length > 0,
+      isLiked: like.length > 0,
+      permission
+    };
+  } catch (error) {
+    console.error("Error fetching register status by user_id:", error);
+    throw error;
+  }
+}
+
+// Query to register an athlete to a professional
+export async function registerAtoP(athleteId, professionalId) {
+  try {
+    const register = await sql`
+      INSERT INTO register (athlete_id, professional_id)
+      VALUES (${athleteId}, ${professionalId})
+      RETURNING *;
+    `;
+    return register.length > 0 ? register[0] : null;
+  } catch (error) {
+    console.error("Error registering athlete to professional:", error);
+    throw error;
+  }
+}
+
+// Query to unregister an athlete from a professional
+export async function unregisterAtoP(athleteId, professionalId) {
+  try {
+    const unregister = await sql`
+      DELETE FROM register 
+      WHERE athlete_id = ${athleteId} 
+        AND professional_id = ${professionalId}
+      RETURNING *;
+    `;
+    return unregister.length > 0 ? unregister[0] : null;
+  } catch (error) {
+    console.error("Error unregistering athlete from professional:", error);
+    throw error;
+  }
+}
+
+// Query to like a professional by an athlete
+export async function likeAtoP(athleteId, professionalId) {
+  try {
+    const like = await sql`
+      INSERT INTO like_pro (athlete_id, professional_id)
+      VALUES (${athleteId}, ${professionalId})
+      RETURNING *;
+    `;
+    return like.length > 0 ? like[0] : null;
+  } catch (error) {
+    console.error("Error liking professional by athlete:", error);
+    throw error;
+  }
+}
+
+// Query to unlike a professional by an athlete
+export async function unlikeAtoP(athleteId, professionalId) {
+  try {
+    const unlike = await sql`
+      DELETE FROM like_pro 
+      WHERE athlete_id = ${athleteId} 
+        AND professional_id = ${professionalId}
+      RETURNING *;
+    `;
+    return unlike.length > 0 ? unlike[0] : null;
+  } catch (error) {
+    console.error("Error unliking professional by athlete:", error);
+    throw error;
+  }
+}
+
+// Query to fetch all posts by id
+export async function fetchPostsById(id) {
+  try {
+    const posts = await sql`
+      SELECT * 
+      FROM post
+      WHERE post_visibility = 'Public'
+        AND professional_id = ${id}
+    `;
+    return posts;
+  } catch (error) {
+    console.error("Error fetching posts by id:", error);
     throw error;
   }
 }
