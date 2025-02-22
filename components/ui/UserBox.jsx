@@ -61,7 +61,7 @@ const UserBox = ({ account, onClick }) => {
         {/* Like count on the right */}
         <Grid item xs={4} sx={{ display: "flex", justifyContent: "flex-end" }}>
           <Typography sx={{ color: "#ED6262", fontWeight: "bold" }}>
-            {likeCount.count > 0 && (
+            {likeCount.count > 5 && (
               <CheckCircleIcon
                 sx={{
                   color: "green", // Green color for checkmark

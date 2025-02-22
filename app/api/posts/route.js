@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import sql from "../db/config";
 import { PostCreate } from "../db/queries";
 
-
 export async function GET(req) {
   try{    
     const posts = await sql`
@@ -20,8 +19,8 @@ export async function POST(req) {
   const formData = await req.formData();
     
   try {
-    const post = await PostCreate(formData);
-    return NextResponse.json(post, { status: 201 });
+    await PostCreate(formData);
+    return NextResponse.json({ status: 201 });
     
   } catch (error) {
     console.error("Error creating post:", error);

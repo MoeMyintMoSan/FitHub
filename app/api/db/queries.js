@@ -117,8 +117,8 @@ export async function fetchAccountsByUserType(userId) {
         SELECT u.user_id, u.user_name, u.user_type, p.bio 
         FROM users u
         JOIN professional p ON u.user_id = p.professional_id
-        JOIN private_feed pf ON p.professional_id = pf.professional_id
-        WHERE pf.athlete_id = ${userId}
+        JOIN register r ON p.professional_id = r.professional_id
+        WHERE r.athlete_id = ${userId}
       `;
     } else if (userType === "Trainer" || userType === "Nutritionist") {
       // Fetch athletes paired with the professional in private_feed
@@ -126,8 +126,8 @@ export async function fetchAccountsByUserType(userId) {
         SELECT u.user_id, u.user_name, u.user_type 
         FROM users u
         JOIN athlete a ON u.user_id = a.athlete_id
-        JOIN private_feed pf ON a.athlete_id = pf.athlete_id
-        WHERE pf.professional_id = ${userId}
+        JOIN register r ON a.athlete_id = r.athlete_id
+        WHERE r.professional_id = ${userId}
       `;
     } else {
       throw new Error("Invalid user type");
@@ -362,11 +362,11 @@ export async function getStatusRL(userId1, userId2) {
 
     // Ensure the athlete can only have 1 trainer and 1 nutritionist
     const canRegister =
-      (professionalType === "Trainer" && athleteRegistration[0].trainer_count === 0) || 
-      (professionalType === "Nutritionist" && athleteNutritionistRegistration[0].nutritionist_count === 0);
+      (professionalType === "Trainer" && parseInt(athleteRegistration[0].trainer_count === 0,10)) || 
+      (professionalType === "Nutritionist" && parseInt(athleteNutritionistRegistration[0].nutritionist_count === 0,10));
 
     // Ensure professional has fewer than 10 athletes
-    const canProfessionalRegister = professionalAthleteCount[0].count < 10;
+    const canProfessionalRegister = parseInt(professionalAthleteCount[0].count < 10,10);
 
     // Final permission check
     const permission = canRegister && canProfessionalRegister;

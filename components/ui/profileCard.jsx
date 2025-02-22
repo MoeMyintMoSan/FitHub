@@ -144,13 +144,14 @@ export default function ProfileCard({ user1, user2 }) {
   }, [userData, self]);
 
   useEffect(() => {
-    if (currentUserData?.user_type === "Athlete") {
+    if (proDataFetched.current && currentUserData?.user_type === "Athlete" && userData?.user_type !== "Athlete") {
       fetch(`/api/users/currentUsers/statusRL?userId1=${encodeURIComponent(currentUserData?.user_id)}&userId2=${encodeURIComponent(userData?.user_id)}`)
         .then((response) => response.json())
         .then((data) => {
+          console.log("Fetched user status:", data);
           setRegisterText(data.isRegistered ? "UNREGISTER" : "REGISTER"); // Toggle text
           setLikeText(data.isLiked ? "UNLIKE" : "LIKE"); // Toggle text
-          setShowButtonR(true);
+          setShowButtonR(data.isRegistered || data.permission);
           setShowButtonL(true);
         })
         .catch((error) => {
