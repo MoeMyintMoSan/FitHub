@@ -5,8 +5,10 @@ import { Tabs, Tab, Box, TextField, Typography, Grid } from "@mui/material";
 import Post from "@/components/ui/post";
 import UserBox from "@/components/ui/UserBox"; // Import the UserBox component
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const SearchPage = () => {
+  const { data: session } = useSession();
   const [tab, setTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState([]);
@@ -109,6 +111,7 @@ const SearchPage = () => {
                 <Grid item xs={12} key={post.post_id}>
                   <Post
                     post_id={post.post_id}
+                    email={session.user.email}
                   />
                 </Grid>
               ))}

@@ -35,7 +35,7 @@ export async function POST(req) {
     const post_visibility = formData.get("post_visibility");
     const image = formData.get("image");
     const details = JSON.parse(formData.get("details"));
-    const athlete_id = formData.get("referenced_athletes")[1];
+    const athlete_id = JSON.parse(formData.get("referenced_athletes"))[0];
 
     const user = await findUserByEmail(email);
     const user_id = user.user_id;

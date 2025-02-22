@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { styled } from "@mui/material/styles";
 import {
   Box, Fab, Button, TextField, Dialog, DialogActions, DialogContent,
   DialogTitle, Select, MenuItem, FormControl, InputLabel, OutlinedInput,
@@ -11,7 +10,6 @@ import AddIcon from "@mui/icons-material/Add";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import { UploadButton } from "./uploadthing";
-import { Typography } from "antd";
 
 export default function FormDialog({ type, email }) {
   const [open, setOpen] = React.useState(false);
@@ -89,6 +87,7 @@ export default function FormDialog({ type, email }) {
     const apiPath = visibility === "Public" ? "/api/posts" : `/api/privatefeed/posts`;
 
     try {
+      console.log("posting:",selectedAthletes);
       const response = await fetch(apiPath, {
         method: "POST",
         body: formData,
@@ -97,6 +96,7 @@ export default function FormDialog({ type, email }) {
       if (response.ok) {
         console.log("Post created successfully");
         handleClose();
+        window.location.reload();
       } else {
         console.error("Failed to create post");
       }
@@ -104,18 +104,6 @@ export default function FormDialog({ type, email }) {
       console.error("Error creating post:", error);
     }
   };
-
-  const VisuallyHiddenInput = styled("input")({
-    clip: "rect(0 0 0 0)",
-    clipPath: "inset(50%)",
-    height: 1,
-    overflow: "hidden",
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    whiteSpace: "nowrap",
-    width: 1,
-  });
 
   return (
     <React.Fragment>
