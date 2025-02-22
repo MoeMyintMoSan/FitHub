@@ -28,28 +28,26 @@ cd fithub
 pnpm install
 ```
 
-This will install all the required dependencies for the project, including:
+Install all the required dependencies for the project, including:
 
 - `@emotion/react`, `@emotion/styled` (for CSS-in-JS styling)
 - `@mui/icons-material`, `@mui/joy`, `@mui/material` (for UI components)
 - `@neondatabase/serverless` (for database connectivity)
-- `@next-auth/prisma-adapter`, `next-auth` (for authentication)
+- `next-auth` (for authentication)
 - `@uploadthing/react`, `uploadthing` (for file uploads)
 - `antd` (for additional UI components)
-- `bcrypt`, `bcryptjs` (for password hashing)
+- `bcrypt`, `bcryptjs` 
 - `tailwindcss` (for utility-first CSS)
-- `react`, `react-dom`, `next`, `typescript`, and more.
+- `react`, `react-dom`, `next`, `typescript`
 
 ### Set up environment variables:
 
 Create a `.env` file in the root directory and add the necessary environment variables. For example:
 
 ```env
-DATABASE_URL=your_database_url_here
-NEXTAUTH_SECRET=your_secret_key_here
 NEXTAUTH_URL=http://localhost:3000
-UPLOADTHING_SECRET=your_uploadthing_secret_here
-UPLOADTHING_APP_ID=your_uploadthing_app_id_here
+NEXTAUTH_SECRET=
+DATABASE_URL=''
 ```
 
 Replace the placeholders with your actual values.
