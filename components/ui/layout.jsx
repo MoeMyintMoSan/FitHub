@@ -42,50 +42,66 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const Layout = ({ children, pathname }) => {
     console.log(pathname, "pathname in layout");
   return (
-    <div
-      className="min-h-screen"
-      style={{ backgroundColor: "#0E1113" }}
-    >
-      <AppBar 
-          position="sticky" 
-          sx={{
-              backgroundColor: "#0E1113", 
-              zIndex: 1201, 
-              borderBottom: "2px solid #51626D",
-              height: "64px"
-          }}
-      >
-          <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="h4" sx={{ color: "#ED6262" }}>
-                  FitHub
-              </Typography>
-              
-              {/* {pathname === "/search" && (
-                  <Search>
-                      <SearchIconWrapper>
-                          <SearchIcon />
-                      </SearchIconWrapper>
-                      <StyledInputBase
-                          placeholder="Search…"
-                          inputProps={{ "aria-label": "search" }}
-                      />
-                  </Search>
-              )} */}
-              
-              <Box>
-                  <a href="#" className="text-white pr-10">
-                      
-                  </a>
-              </Box>
-          </Toolbar>
-      </AppBar>
-      
-      <div className="flex">
-        <SideMenu pathname={pathname} />
-        <div className="flex-1 container mx-auto p-5">
-          {children}
+    <div>
+     <style>
+        {`
+          ::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+          }
+        `}
+      </style>   
+    
+        <div
+        className="min-h-screen"
+        style={{ 
+            backgroundColor: "#0E1113",
+            // Allow scrolling
+            scrollbarWidth: "none", /* Firefox */
+            msOverflowStyle: "none", /* IE/Edge */ }}
+        >
+        
+        <AppBar 
+            position="sticky" 
+            sx={{
+                backgroundColor: "#0E1113", 
+                zIndex: 1201, 
+                borderBottom: "2px solid #51626D",
+                height: "64px"
+            }}
+        >
+            
+            <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography variant="h4" sx={{ color: "#ED6262" }}>
+                    FitHub
+                </Typography>
+                
+                {/* {pathname === "/search" && (
+                    <Search>
+                        <SearchIconWrapper>
+                            <SearchIcon />
+                        </SearchIconWrapper>
+                        <StyledInputBase
+                            placeholder="Search…"
+                            inputProps={{ "aria-label": "search" }}
+                        />
+                    </Search>
+                )} */}
+                
+                <Box>
+                    <a href="#" className="text-white pr-10">
+                        
+                    </a>
+                </Box>
+            </Toolbar>
+        </AppBar>
+        
+        <div className="flex">
+            <SideMenu pathname={pathname} />
+            <div className="flex-1 container mx-auto p-5">
+            {children}
+            </div>
         </div>
-      </div>
+        </div>
     </div>
   );
 };
