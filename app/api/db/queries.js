@@ -362,11 +362,11 @@ export async function getStatusRL(userId1, userId2) {
 
     // Ensure the athlete can only have 1 trainer and 1 nutritionist
     const canRegister =
-      (professionalType === "Trainer" && parseInt(athleteRegistration[0].trainer_count === 0,10)) || 
-      (professionalType === "Nutritionist" && parseInt(athleteNutritionistRegistration[0].nutritionist_count === 0,10));
+      (professionalType === "Trainer" && parseInt(athleteRegistration[0].trainer_count, 10) === 0) ||
+      (professionalType === "Nutritionist" && parseInt(athleteNutritionistRegistration[0].nutritionist_count, 10) === 0);
 
-    // Ensure professional has fewer than 10 athletes
-    const canProfessionalRegister = parseInt(professionalAthleteCount[0].count < 10,10);
+    // Ensure professional has fewer than 10 athletesc
+    const canProfessionalRegister = parseInt(professionalAthleteCount[0].count, 10) < 10;
 
     // Final permission check
     const permission = canRegister && canProfessionalRegister;
@@ -472,40 +472,40 @@ export async function fetchPostsById(id) {
 
 export async function PostCreate(formData) {
   const email = formData.get("email");
-    const title = formData.get("title");
-    const content = formData.get("content");
-    const post_visibility = formData.get("post_visibility");
-    const image = formData.get("image");
-    const details = JSON.parse(formData.get("details"));
-    const user = await findUserByEmail(email);
-    const user_id = user.user_id;
-    const content_type = user.user_type;
+  const title = formData.get("title");
+  const content = formData.get("content");
+  const post_visibility = formData.get("post_visibility");
+  const image = formData.get("image");
+  const details = JSON.parse(formData.get("details"));
+  const user = await findUserByEmail(email);
+  const user_id = user.user_id;
+  const content_type = user.user_type;
 
-    // Insert into Post table
-    const postResult = await sql`
+  // Insert into Post table
+  const postResult = await sql`
       INSERT INTO Post (professional_id, title, content, image, content_type, post_visibility)
       VALUES (${user_id}, ${title}, ${content}, ${image}, ${content_type}, ${post_visibility})
       RETURNING post_id;
     `;
 
-    const postId = postResult[0].post_id;
+  const postId = postResult[0].post_id;
 
-    // Insert into corresponding detail table
-    if (content_type === "Trainer") {
-      for (const detail of details) {
-        await sql`
+  // Insert into corresponding detail table
+  if (content_type === "Trainer") {
+    for (const detail of details) {
+      await sql`
           INSERT INTO trainer_post_details (post_id, exercise, reps, sets)
           VALUES (${postId}, ${detail.exercise}, ${detail.reps}, ${detail.sets});
         `;
-      }
-    } else if (content_type === "Nutritionist") {
-      for (const detail of details) {
-        await sql`
+    }
+  } else if (content_type === "Nutritionist") {
+    for (const detail of details) {
+      await sql`
           INSERT INTO nutritionist_post_details (post_id, food, calories)
           VALUES (${postId}, ${detail.food}, ${detail.calories});
         `;
-      }
     }
+  }
 }
 
 export async function fetchPostDetails(id) {
@@ -527,41 +527,41 @@ export async function fetchPostDetails(id) {
       WHERE post.post_id = ${id};
     `;
 
-    if (rows.length === 0) {
-      return new Response(JSON.stringify({ message: "Post not found" }), {
-        status: 404,
-      });
-    }
+  if (rows.length === 0) {
+    return new Response(JSON.stringify({ message: "Post not found" }), {
+      status: 404,
+    });
+  }
 
-    // **Step 1: Extract post data from the first row**
-    const { 
-      post_id, professional_id, title, content, image, content_type, 
-      post_visibility, created_date, user_name 
-    } = rows[0];
+  // **Step 1: Extract post data from the first row**
+  const {
+    post_id, professional_id, title, content, image, content_type,
+    post_visibility, created_date, user_name
+  } = rows[0];
 
-    // **Step 2: Group exercise/food details**
-    const details = rows.map(row => ({
-      ...(content_type === "Trainer"
-        ? { exercise: row.exercise, reps: row.reps, sets: row.sets }
-        : { food: row.food, calories: row.calories }
-      )
-    })).filter(detail => Object.values(detail).some(value => value !== null));
+  // **Step 2: Group exercise/food details**
+  const details = rows.map(row => ({
+    ...(content_type === "Trainer"
+      ? { exercise: row.exercise, reps: row.reps, sets: row.sets }
+      : { food: row.food, calories: row.calories }
+    )
+  })).filter(detail => Object.values(detail).some(value => value !== null));
 
-    // **Step 3: Format the final response**
-    const responseData = {
-      post_id,
-      professional_id,
-      title,
-      content,
-      image,
-      content_type,
-      post_visibility,
-      created_date,
-      user_name,
-      details,  // Contains an array of exercises or foods
-    };
+  // **Step 3: Format the final response**
+  const responseData = {
+    post_id,
+    professional_id,
+    title,
+    content,
+    image,
+    content_type,
+    post_visibility,
+    created_date,
+    user_name,
+    details,  // Contains an array of exercises or foods
+  };
 
-    return responseData;
+  return responseData;
 }
 
 export async function fetchCommentsByPostId(post_id) {
@@ -572,26 +572,26 @@ export async function fetchCommentsByPostId(post_id) {
         WHERE c.post_id = ${post_id}
         ORDER BY c.comment_id DESC;
       `;
-  
-      return comments;
+
+  return comments;
 }
 
 export async function createComment(email, post_id, content) {
   if (!email || !post_id || !content) {
-        return NextResponse.json({ message: "All fields are required" }, { status: 400 });
-      }
-  
-      const user = await findUserByEmail(email);
-      const user_id = user.user_id;
-  
-      const result = await sql`
+    return NextResponse.json({ message: "All fields are required" }, { status: 400 });
+  }
+
+  const user = await findUserByEmail(email);
+  const user_id = user.user_id;
+
+  const result = await sql`
         INSERT INTO "Comment" (user_id, post_id, content)
         VALUES (${user_id}, ${post_id}, ${content})
         RETURNING comment_id, content, post_id, user_id;
       `;
-  
-      const comment = result[0];
-      comment.user_name = user.user_name
-      
-      return { message: "Comment added", comment: result[0] };
+
+  const comment = result[0];
+  comment.user_name = user.user_name
+
+  return { message: "Comment added", comment: result[0] };
 }
