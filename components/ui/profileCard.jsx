@@ -38,7 +38,7 @@ export default function ProfileCard({ user1, user2 }) {
   const [userData, setUserData] = useState(null);
   const [originalUserData, setOriginalUserData] = useState(null);
   const [proData, setProData] = useState(null);
-  const [postData, setPostData] = useState(null);
+  const [postData, setPostData] = useState([]);
 
   const self = user1 === user2;
   const currentUserFetched = useRef(false);
@@ -85,7 +85,7 @@ export default function ProfileCard({ user1, user2 }) {
           setUserData(prev => ({ ...prev, ...bioData }));
           setOriginalUserData(prev => ({ ...prev, ...bioData }));
           setProData(proData);
-          setPostData(postData);
+          setPostData(postData || []);
 
           if (proData?.likePro?.count > 10) {
             setShowCheckMark(true);
@@ -294,6 +294,10 @@ export default function ProfileCard({ user1, user2 }) {
     const date = new Date(utcDate);
     return date.toISOString().split("T")[0]; // Extract only YYYY-MM-DD
   };
+  console.log("User Data:", userData);
+  console.log("Post Data:", postData);
+  console.log("Pro Data:", proData);
+  console.log("Current User Data:", currentUserData);
 
   return (
     <React.Fragment>
@@ -507,7 +511,8 @@ export default function ProfileCard({ user1, user2 }) {
                     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.25)" // Add shadow effect
                   }}
                 >
-                  <CusBox test1={"Posts"} test2={proData?.posts?.count} type={1}></CusBox>
+                  {/* <CusBox test1={"Posts"} test2={proData?.posts?.count} type={1}></CusBox> */}
+                  <CusBox test1={"Posts"} test2={postData?.length || 0 } type={1}></CusBox>
                   <CusBox test1={"Registered"} test2={proData?.registered?.count + " / 10"} type={1}></CusBox>
                   <CusBox test1={"Likes"} test2={proData?.likePro?.count} type={1}></CusBox>
                 </Box>
