@@ -65,7 +65,7 @@ const HomePage = () => {
     <Layout pathname={"/home"} style={{ overflow: "hidden" }}>
       {posts.length > 0 ? (
         posts.map((post) => {
-          console.log("Rendering post:", post.post_id);
+          // console.log("Rendering post:", post.post_id);
           return <Post key={post.post_id} post_id={post.post_id} email={email} />;
         })
       ) : (
