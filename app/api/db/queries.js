@@ -16,7 +16,7 @@ export async function searchUsers(searchTerm) {
   }
 }
 
-// Search Posts by Content
+// Search Posts by Title
 export async function searchPosts(searchTerm) {
   try {
     const response = await sql`

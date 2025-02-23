@@ -34,7 +34,7 @@ CREATE TABLE "Comment" (
     FOREIGN KEY (post_id) REFERENCES Post(post_id) ON DELETE CASCADE
 );  
 
-CREATE TABLE "Post" (
+CREATE TABLE "post" (
     post_id SERIAL PRIMARY KEY,
     professional_id INT NOT NULL,
     title VARCHAR(255) NOT NULL,
