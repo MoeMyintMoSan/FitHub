@@ -2,11 +2,8 @@ import { NextResponse } from "next/server";
 import sql from "../db/config";
 import { PostCreate } from "../db/queries";
 
-
 export async function GET(req) {
-  try{
-    const { searchParams } = new URL(req.url)
-    
+  try{    
     const posts = await sql`
       SELECT post.post_id FROM "post"
       WHERE post.post_visibility = 'Public'

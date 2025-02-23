@@ -1,54 +1,30 @@
-import { searchUsers, searchPosts } from "../db/queries";
+import { NextResponse } from "next/server";
+import { searchUsers, searchPosts, likeProCountsById } from "../db/queries";
 
 export const config = {
   runtime: "edge",
 };
 
-// export default async function handler(req) {
-//     console.log('here')
-//     console.log(req.method)
-//   if (req.method !== "POST") {
-//     return new Response(JSON.stringify({ error: "Method Not Allowed" }), {
-//       status: 405,
-//       headers: { "Content-Type": "application/json" },
-//     });
-//   }
+export async function GET(req) {
+  const { searchParams } = new URL(req.url);
+  const userId = searchParams.get("user_id");
 
-//   try {
-//     const { searchTerm, type } = await req.json();
+  if (!userId) {
+    return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+  }
 
-//     if (!searchTerm) {
-//       return new Response(JSON.stringify({ error: "Search term is required" }), {
-//         status: 400,
-//         headers: { "Content-Type": "application/json" },
-//       });
-//     }
+  try {
+    const likeCount = await likeProCountsById(userId);
+    if (likeCount === null) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
-//     let results;
-//     if (type === "account") {
-//       results = await searchUsers(searchTerm);
-//     } else if (type === "post") {
-//       results = await searchPosts(searchTerm);
-//     } else {
-//       return new Response(JSON.stringify({ error: "Invalid search type" }), {
-//         status: 400,
-//         headers: { "Content-Type": "application/json" },
-//       });
-//     }
-
-//     return new Response(JSON.stringify(results), {
-//       status: 200,
-//       headers: { "Content-Type": "application/json" },
-//     });
-//   } catch (error) {
-//     console.error("Error in search API:", error);
-//     return new Response(JSON.stringify({ error: "Internal Server Error" }), {
-//       status: 500,
-//       headers: { "Content-Type": "application/json" },
-//     });
-//   }
-// }
-
+    return NextResponse.json({ likePro: likeCount }); // Send like count data
+  } catch (error) {
+    console.error("Error fetching like count:", error);
+    return NextResponse.json({ error: "Database error" }, { status: 500 });
+  }
+}
 
 export async function POST(request){
     console.log("Here")

@@ -35,21 +35,6 @@ const HomePage = () => {
       router.push("/");
     }
     
-  //   async function getUser(){
-  //     const res = await fetch(`/api/users?email=${email}`);
-  //     const data = await res.json();
-  //     setUser(data);
-  //   }
-  //   getUser();
-  // }, [status, router, email]);
-
-  // if (status === "loading") {
-  //   return <p>Loading...</p>;
-  // }
-
-  // if (status === "unauthenticated") {
-  //   return null;
-  // }
     async function getUser() {
       try {
         const res = await fetch(`/api/users?email=${email}`);

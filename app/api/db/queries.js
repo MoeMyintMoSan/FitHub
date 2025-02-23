@@ -117,8 +117,8 @@ export async function fetchAccountsByUserType(userId) {
         SELECT u.user_id, u.user_name, u.user_type, p.bio 
         FROM users u
         JOIN professional p ON u.user_id = p.professional_id
-        JOIN private_feed pf ON p.professional_id = pf.professional_id
-        WHERE pf.athlete_id = ${userId}
+        JOIN register r ON p.professional_id = r.professional_id
+        WHERE r.athlete_id = ${userId}
       `;
     } else if (userType === "Trainer" || userType === "Nutritionist") {
       // Fetch athletes paired with the professional in private_feed
@@ -126,8 +126,8 @@ export async function fetchAccountsByUserType(userId) {
         SELECT u.user_id, u.user_name, u.user_type 
         FROM users u
         JOIN athlete a ON u.user_id = a.athlete_id
-        JOIN private_feed pf ON a.athlete_id = pf.athlete_id
-        WHERE pf.professional_id = ${userId}
+        JOIN register r ON a.athlete_id = r.athlete_id
+        WHERE r.professional_id = ${userId}
       `;
     } else {
       throw new Error("Invalid user type");
@@ -139,9 +139,6 @@ export async function fetchAccountsByUserType(userId) {
     throw error;
   }
 }
-
-
-
 
 // Query to find a professional's post count by user_id
 export async function postCountsById(id) {
@@ -241,6 +238,16 @@ export async function updateToProfessionalById(id, type) {
     `;
 
     await sql`
+      DELETE FROM private_feed
+      WHERE athlete_id = ${id};
+    `;
+
+    await sql`
+      DELETE FROM register
+      WHERE athlete_id = ${id};
+    `;
+
+    await sql`
       INSERT INTO professional (professional_id, bio)
       VALUES (${id}, ${"No Bio Yet"});
     `;
@@ -248,6 +255,21 @@ export async function updateToProfessionalById(id, type) {
     return updatedUser.length > 0 ? updatedUser[0] : null;
   } catch (error) {
     console.error("Error updating user to professional by user_id:", error);
+    throw error;
+  }
+}
+
+// Query to find bio by user_id
+export async function findBioById(id) {
+  try {
+    const bio = await sql`
+      SELECT bio 
+      FROM professional 
+      WHERE professional_id = ${id}
+    `;
+    return bio.length > 0 ? bio[0] : null;
+  } catch (error) {
+    console.error("Error finding bio by user_id:", error);
     throw error;
   }
 }
@@ -340,11 +362,11 @@ export async function getStatusRL(userId1, userId2) {
 
     // Ensure the athlete can only have 1 trainer and 1 nutritionist
     const canRegister =
-      (professionalType === "Trainer" && athleteRegistration[0].trainer_count === 0) || 
-      (professionalType === "Nutritionist" && athleteNutritionistRegistration[0].nutritionist_count === 0);
+      (professionalType === "Trainer" && parseInt(athleteRegistration[0].trainer_count === 0,10)) || 
+      (professionalType === "Nutritionist" && parseInt(athleteNutritionistRegistration[0].nutritionist_count === 0,10));
 
     // Ensure professional has fewer than 10 athletes
-    const canProfessionalRegister = professionalAthleteCount[0].count < 10;
+    const canProfessionalRegister = parseInt(professionalAthleteCount[0].count < 10,10);
 
     // Final permission check
     const permission = canRegister && canProfessionalRegister;
@@ -375,7 +397,7 @@ export async function registerAtoP(athleteId, professionalId) {
   }
 }
 
-// Query to unregister an athlete from a professional
+// Query to unregister an athlete from a professional and delete related data
 export async function unregisterAtoP(athleteId, professionalId) {
   try {
     const unregister = await sql`
@@ -384,6 +406,16 @@ export async function unregisterAtoP(athleteId, professionalId) {
         AND professional_id = ${professionalId}
       RETURNING *;
     `;
+
+    await sql`
+      DELETE FROM post
+      WHERE post_id IN (
+        SELECT post_id FROM private_feed 
+        WHERE athlete_id = ${athleteId} 
+        AND professional_id = ${professionalId}
+      );
+    `;
+
     return unregister.length > 0 ? unregister[0] : null;
   } catch (error) {
     console.error("Error unregistering athlete from professional:", error);

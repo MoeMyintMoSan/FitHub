@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import sql from "@/app/api/db/config";
 import {fetchCommentsByPostId, createComment } from "../db/queries";
 // GET Comments for a specific post
 export async function GET(req) {

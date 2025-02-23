@@ -1,4 +1,3 @@
-import sql from "../../db/config";
 import { fetchPostDetails } from "../../db/queries";
 export async function GET(request, { params }) {
   const resolvedParams = await params;
