@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function SignUp() {
   const [user_name, setUserName] = useState("");
@@ -197,9 +198,9 @@ export default function SignUp() {
         </form>
         <p className="mt-4 text-sm text-gray-400 text-center">
           Already have an account?{" "}
-          <a href="/" className="text-[#FD6262] hover:underline">
+          <Link href="/" className="text-[#FD6262] hover:underline">
             Sign In
-          </a>
+          </Link>
         </p>
       </div>
     </div>
