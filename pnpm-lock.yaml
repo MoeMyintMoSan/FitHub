@@ -30,8 +30,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(@prisma/client@6.1.0)(next-auth@4.24.11(next@15.2.0-canary.63(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(nodemailer@6.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@uploadthing/react':
-        specifier: ^7.2.1
-        version: 7.2.1(next@15.2.0-canary.63(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(uploadthing@7.5.1(next@15.2.0-canary.63(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(tailwindcss@3.4.16))
+        specifier: ^7.3.0
+        version: 7.3.0(next@15.2.0-canary.63(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(uploadthing@7.5.1(next@15.2.0-canary.63(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(tailwindcss@3.4.16))
       antd:
         specifier: ^5.22.3
         version: 5.22.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -820,8 +820,8 @@ packages:
   '@uploadthing/mime-types@0.3.4':
     resolution: {integrity: sha512-EB0o0a4y++UJFMLqS8LDVhSQgXUllG6t5fwl5cbmOM0Uay8YY5Nc/JjFwzJ8wccdIKz4oYwQW7EOSfUyaMPbfw==}
 
-  '@uploadthing/react@7.2.1':
-    resolution: {integrity: sha512-X8iUJDOFyT9DonfZkxx3ngWvr4iz47tmXT7pC0209YT+Odfmq/sd/a0w7UcFrCiYIV1CL0xD97ynRDTN3LX48Q==}
+  '@uploadthing/react@7.3.0':
+    resolution: {integrity: sha512-rSH9BpPy2/G7nZ3SEbZQANUFHkBCS5CwWiVzmOW9fzFNoqF+buqBvi5FDweffqMSwmr+/VS8Wpyj87/GYbV0Fw==}
     peerDependencies:
       next: '*'
       react: ^17.0.2 || ^18.0.0 || ^19.0.0
@@ -832,6 +832,9 @@ packages:
 
   '@uploadthing/shared@7.1.6':
     resolution: {integrity: sha512-7EyTxaGiTIdyqCwNQFryo0LR4eZgyClq31igrjGrXHkxSlXnurphybjzB6AVD73UBPVGCfbtOK0lloduhsMNlg==}
+
+  '@uploadthing/shared@7.1.7':
+    resolution: {integrity: sha512-VDvGmyHhdwaivC+eee77yZnOVvz59mOmLVbcuYFo4SkoNvPuc3AyPORqJJMBveQivTvELdrQcjlx6IPv98JkSA==}
 
   abbrev@1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
@@ -3568,9 +3571,9 @@ snapshots:
 
   '@uploadthing/mime-types@0.3.4': {}
 
-  '@uploadthing/react@7.2.1(next@15.2.0-canary.63(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(uploadthing@7.5.1(next@15.2.0-canary.63(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(tailwindcss@3.4.16))':
+  '@uploadthing/react@7.3.0(next@15.2.0-canary.63(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(uploadthing@7.5.1(next@15.2.0-canary.63(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(tailwindcss@3.4.16))':
     dependencies:
-      '@uploadthing/shared': 7.1.6
+      '@uploadthing/shared': 7.1.7
       file-selector: 0.6.0
       react: 19.0.0
       uploadthing: 7.5.1(next@15.2.0-canary.63(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(tailwindcss@3.4.16)
@@ -3578,6 +3581,12 @@ snapshots:
       next: 15.2.0-canary.63(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
 
   '@uploadthing/shared@7.1.6':
+    dependencies:
+      '@uploadthing/mime-types': 0.3.4
+      effect: 3.12.0
+      sqids: 0.3.0
+
+  '@uploadthing/shared@7.1.7':
     dependencies:
       '@uploadthing/mime-types': 0.3.4
       effect: 3.12.0
