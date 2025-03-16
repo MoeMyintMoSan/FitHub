@@ -522,7 +522,7 @@ export default function ProfileCard({ user1, user2 }) {
                 {postData?.length > 0 ? (
                   postData.map((post) => {
                     // console.log("Rendering post:", post.post_id);
-                    return <CusBox type={2} obj={<Post key={post.post_id} post_id={post.post_id} email={user1} />} />;
+                     return <CusBox key={post.post_id} type={2} obj={<Post key={post.post_id} post_id={post.post_id} email={user1} />} />;
                   })
                   ) : (
                   <p>No posts available</p>

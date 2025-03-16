@@ -92,7 +92,7 @@ export default function SignIn() {
           </button>
         </form>
         <p className="mt-4 text-sm text-gray-400 text-center">
-          Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
           <a href="/signup" className="text-[#FD6262] hover:underline">
             Sign Up
           </a>

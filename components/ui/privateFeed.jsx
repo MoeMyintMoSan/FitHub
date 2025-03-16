@@ -79,7 +79,7 @@ export default function PrivateFeed() {
                             <Box sx={{ padding: 2 }}>
                                 <PeopleIcon sx={{ color: "#FFFFFF", fontSize: 40 }} />
                                 <Typography sx={{ fontSize: "1.5rem", color: "#FFFFFF" }}>
-                                    You haven't registered a nutritionist yet! Please register a nutritionist first!
+                                You haven&apos;t registered a nutritionist yet! Please register a nutritionist first!
                                 </Typography>
                             </Box>
                         )}
