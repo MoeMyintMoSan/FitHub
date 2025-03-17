@@ -1,12 +1,11 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import Layout from "@/components/ui/layout";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-
 import ProfileCard from "@/components/ui/profileCard";
 
-const ProfilePage = () => {
+const ProfilePageContent = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -51,6 +50,14 @@ const ProfilePage = () => {
     <Layout pathname={"/profile"}>
       <ProfileCard user1={session?.user?.email} user2={userEmail} />
     </Layout>
+  );
+};
+
+const ProfilePage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProfilePageContent />
+    </Suspense>
   );
 };
 
